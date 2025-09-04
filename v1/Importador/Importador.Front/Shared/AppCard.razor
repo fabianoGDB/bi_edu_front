@@ -1,0 +1,18 @@
+<div class="card @Css">
+    @if (!string.IsNullOrWhiteSpace(Title))
+    {
+        <div class="card-title">@Title</div>
+    }
+    @ChildContent
+    @if (Actions is not null)
+    {
+        <div class="card-actions">@Actions</div>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public string Css { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? Actions { get; set; }
+}

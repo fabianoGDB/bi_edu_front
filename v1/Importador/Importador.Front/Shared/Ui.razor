@@ -1,0 +1,8 @@
+@* Botão *@
+@code {
+    [Parameter] public string? Text { get; set; }
+    [Parameter] public string Kind { get; set; } = "btn";
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+}
+<button class="@Kind" disabled="@Disabled" @onclick="OnClick">@Text</button>

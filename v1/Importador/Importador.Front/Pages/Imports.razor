@@ -1,0 +1,75 @@
+@page "/imports"
+@using Importador.Front.Models
+@using Importador.Front.Services
+@inject IImportsApi Api
+
+<h2 class="h1">Lista de Importações</h2>
+<p class="sub">Acompanhe o status das suas importações de dados</p>
+
+@if (_items is null)
+{
+    <p class="sub">Carregando...</p>
+}
+else if (_items.Count == 0)
+{
+    <div class="card">Nenhuma importação ainda.</div>
+}
+else
+{
+    <div class="grid grid-3">
+        @foreach (var i in _items)
+        {
+            <div class="card">
+                <div class="with-icon" style="font-weight:700;margin-bottom:6px">
+                    <span class="material-symbols-outlined">description</span>
+                    <a href=@($"/imports/{i.Id}") style="color:inherit;text-decoration:none">@i.OriginalFileName</a>
+                </div>
+
+                <div class="sub" style="display:flex;gap:12px;align-items:center;margin:8px 0">
+                    <span class="material-symbols-outlined" style="font-size:18px">event</span>
+                    Importado em: @i.CreatedAtUtc.ToLocalTime():g
+                </div>
+                <div class="sub" style="display:flex;gap:12px;align-items:center">
+                    <span class="material-symbols-outlined" style="font-size:18px">group</span>
+                    alunos: @i.Alunos
+                </div>
+
+                <div class="section">
+                    @StatusBadge(i.Status, i.Error)
+                </div>
+
+                <div class="card-actions">
+                    <NavLink class="btn btn-ghost" href=@($"/imports/{i.Id}")>Ver Detalhes</NavLink>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="section center">
+        <NavLink class="btn btn-primary" href="/upload">
+            <span class="material-symbols-outlined">upload</span>
+            Nova Importação
+        </NavLink>
+    </div>
+}
+
+@code {
+    List<ImportListItem> _items = new();
+    protected override async Task OnInitializedAsync() => _items = await Api.GetImportsAsync() ?? new();
+
+    RenderFragment StatusBadge(int status, string? err) => b =>
+    {
+        (string css, string txt) = status switch
+        {
+            2 => ("badge-ok", "Finalizado"),
+            1 => ("badge-info", "Processando"),
+            0 => ("badge-warn", "Pendente"),
+            _ => ("badge-err", "Erro")
+        };
+        if (!string.IsNullOrEmpty(err)) { css = "badge-err"; txt = "Erro"; }
+        b.OpenElement(0, "span");
+        b.AddAttribute(1, "class", $"badge {css}");
+        b.AddContent(2, txt);
+        b.CloseElement();
+    };
+}

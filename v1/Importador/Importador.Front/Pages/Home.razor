@@ -1,0 +1,62 @@
+﻿@page "/"
+
+<section class="hero">
+    <h1 class="hero-title">Sistema de Importação de Dados</h1>
+    <p class="hero-sub">Importe e analise dados acadêmicos de forma eficiente com nossa plataforma integrada</p>
+</section>
+
+<section class="section">
+    <div class="grid grid-3 home-cards">
+
+        <!-- CARD 1 -->
+        <div class="card">
+            <div class="card-title with-icon">
+                <span class="material-symbols-outlined">upload</span>
+                <span>Nova Importação</span>
+            </div>
+            <p class="sub">Faça upload de planilhas Excel para processar dados acadêmicos</p>
+            <div class="card-actions">
+                <NavLink class="btn btn-primary w-full" href="/upload">
+                    <span class="material-symbols-outlined">cloud_upload</span>
+                    Importar Arquivo
+                </NavLink>
+            </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card">
+            <div class="card-title with-icon">
+                <span class="material-symbols-outlined">contract</span>
+                <span>Importações</span>
+            </div>
+            <p class="sub">Visualize o status e gerencie suas importações de dados</p>
+            <div class="card-actions">
+                <NavLink class="btn w-full" href="/imports">
+                    <span class="material-symbols-outlined">visibility</span>
+                    Ver Importações
+                </NavLink>
+            </div>
+        </div>
+
+        <!-- CARD 3 -->
+        <div class="card card-muted">
+            <div class="card-title with-icon">
+                <span class="material-symbols-outlined">analytics</span>
+                <span>Análise</span>
+            </div>
+            <p class="sub">Acesse relatórios detalhados e análises de desempenho</p>
+            <div class="card-actions">
+                <span class="badge badge-info">Em Breve</span>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="section">
+    <div class="howto">
+        <h3>Como funciona?</h3>
+        <p class="sub">1. Faça upload da sua planilha Excel • 2. Acompanhe o processamento em tempo real • 3. Visualize
+            os dados dos alunos e análises detalhadas</p>
+    </div>
+</section>

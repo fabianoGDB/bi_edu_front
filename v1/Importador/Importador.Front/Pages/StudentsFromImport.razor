@@ -1,0 +1,82 @@
+@page "/imports/{Id:guid}/students"
+@using Importador.Front.Services
+@using Importador.Front.Models
+@inject IImportsApi Api
+
+<h2 class="h1">Alunos da Planilha</h2>
+<p class="sub">Import @Id</p>
+
+<div class="section">
+    <input class="input" placeholder="Buscar por nome ou matrícula..." @bind="_q" @bind:event="oninput" />
+</div>
+
+<div class="card" style="padding:0;">
+    <table>
+        <thead>
+            <tr>
+                <th style="width:64px">#</th>
+                <th>Nome</th>
+                <th style="width:180px">Matrícula</th>
+                <th style="width:120px; text-align:center;">Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (_view is null)
+            {
+                <tr>
+                    <td colspan="4" class="sub" style="padding:18px;">Carregando...</td>
+                </tr>
+            }
+            else if (_view.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" class="sub" style="padding:18px;">Nenhum aluno encontrado.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var (aluno, idx) in _view.Select((a, i) => (a, i + 1)))
+                {
+                    <tr>
+                        <td>@idx</td>
+                        <td>@aluno.Nome</td>
+                        <td>@aluno.Matricula</td>
+                        <td style="text-align:center;">
+                            <NavLink class="btn" href=@($"/students/{aluno.Id}?importId={Id}")
+                                aria-label="Ver detalhes do aluno">
+                                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                                <span>Ver</span>
+                            </NavLink>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    List<AlunoListItem> _all = new();
+    List<AlunoListItem> _view = new();
+    string? _q;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _all = await Api.GetAlunosFromImportAsync(Id) ?? new();
+        _view = _all;
+    }
+
+    protected override void OnParametersSet()
+    {
+        var q = _q?.Trim().ToUpperInvariant();
+        _view = string.IsNullOrEmpty(q)
+        ? _all
+        : _all.Where(x =>
+        (x.Nome?.ToUpperInvariant().Contains(q) ?? false) ||
+        (x.Matricula?.ToUpperInvariant().Contains(q) ?? false))
+        .ToList();
+    }
+}

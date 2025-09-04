@@ -1,0 +1,154 @@
+@page "/upload"
+@using Importador.Front.Services
+@inject IImportsApi Api
+@inject NavigationManager Nav
+
+<!-- Popup (seu componente de toast) -->
+<Toast Message="@_toastMsg" Kind="@_toastKind" Position="bottom-right" />
+
+<section class="hero">
+    <h1 class="hero-title">Importar Planilha</h1>
+    <p class="hero-sub">Faça upload de arquivos Excel para análise de dados acadêmicos</p>
+</section>
+
+<div class="upload-wrap">
+    <div class="card card-muted upload-card">
+        <div class="upload-card-header">
+            <span class="material-symbols-outlined">upload</span>
+            <div>
+                <div class="upload-header-title">Importar Planilha (.xlsx)</div>
+                <div class="sub">Selecione um arquivo Excel para importar os dados dos alunos</div>
+            </div>
+        </div>
+
+        <div class="upload-card-body">
+            <div style="margin-bottom:18px">
+                <div style="font-weight:600;margin-bottom:6px">Escolher arquivo</div>
+
+                <!-- aceita .xlsx -->
+                <InputFile OnChange="OnFileChange"
+                    accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                @if (!string.IsNullOrWhiteSpace(_fileName))
+                {
+                    <p class="sub" style="margin-top:8px">@_fileName</p>
+                }
+            </div>
+
+            <div class="upload-tips">
+                <div style="font-weight:600;margin-bottom:6px">Dicas:</div>
+                <ul class="sub" style="list-style:none;margin:0;padding:0;line-height:1.6">
+                    <li>• Somente .xlsx</li>
+                    <li>• Tamanho máx 20MB</li>
+                </ul>
+            </div>
+
+            <button class="btn btn-success w-full" disabled="@(_file is null || _sending)" @onclick="Enviar">
+                <span class="material-symbols-outlined" style="color:#fff">send</span>
+                @(_sending ? "Enviando..." : "Enviar")
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    const long MAX_SIZE = 20L * 1024 * 1024; // 20MB
+
+    IBrowserFile? _file;
+    string? _fileName;
+    bool _sending;
+
+    string? _toastMsg;
+    string _toastKind = "ok";
+
+    void OnFileChange(InputFileChangeEventArgs e)
+    {
+        _toastMsg = null;
+
+        var f = e.File;
+        if (f is null) { _file = null; _fileName = null; return; }
+
+        // valida extensão
+        var lower = (f.Name ?? "").ToLowerInvariant();
+        if (!lower.EndsWith(".xlsx"))
+        {
+            ShowErr("Apenas arquivos .xlsx são suportados.");
+            _file = null; _fileName = null;
+            return;
+        }
+
+        // valida tamanho
+        if (f.Size > MAX_SIZE)
+        {
+            ShowErr("Arquivo maior que 20MB.");
+            _file = null; _fileName = null;
+            return;
+        }
+
+        _file = f;
+        _fileName = f.Name;
+    }
+
+    async Task Enviar()
+    {
+        if (_file is null) { ShowErr("Selecione um arquivo .xlsx."); return; }
+
+        _sending = true; _toastMsg = null;
+        try
+        {
+            using var stream = _file.OpenReadStream(MAX_SIZE);
+            var resp = await Api.UploadAsync(stream, _file.Name);
+
+            var body = await resp.Content.ReadAsStringAsync();
+
+            if (resp.IsSuccessStatusCode)
+            {
+                // tenta extrair id p/ redirecionar para o detalhe
+                var id = TryGetValue(body, "id");
+                ShowOk(id is not null
+                ? $"Upload aceito. Import #{id} iniciado."
+                : "Upload aceito. Processamento iniciado.");
+
+                await Task.Delay(900);
+                Nav.NavigateTo(id is not null ? $"/imports/{id}" : "/imports");
+                return;
+            }
+
+            // Erro: mostra mensagem do backend (ProblemDetails ou {message})
+            var detail = TryGetValue(body, "detail") ?? TryGetValue(body, "title") ?? TryGetValue(body, "message");
+            if (!string.IsNullOrWhiteSpace(detail))
+            {
+                ShowErr($"{(int)resp.StatusCode} {resp.ReasonPhrase}: {detail}");
+            }
+            else
+            {
+                var sample = body?.Length > 240 ? body[..240] + "..." : body;
+                ShowErr($"{(int)resp.StatusCode} {resp.ReasonPhrase}. {sample}");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErr($"Erro ao enviar o arquivo: {ex.Message}");
+        }
+        finally
+        {
+            _sending = false;
+        }
+    }
+
+    void ShowOk(string m) { _toastKind = "ok"; _toastMsg = m; }
+    void ShowErr(string m) { _toastKind = "err"; _toastMsg = m; }
+
+    // Helper para extrair um campo JSON sem DTO fixo
+    static string? TryGetValue(string? json, string key)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return null;
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            if (doc.RootElement.TryGetProperty(key, out var prop))
+                return prop.ToString();
+        }
+        catch { /* corpo não era JSON */ }
+        return null;
+    }
+}

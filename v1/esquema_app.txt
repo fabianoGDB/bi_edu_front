@@ -1,0 +1,171 @@
+) Upload da planilha (POST /api/imports)
+
+Rota: /upload
+
++-----------------------------------------------------------+
+|  Importar Planilha (.xlsx)                                |
+|  [ Escolher arquivo ]  2INFO4bim.xlsx                     |
+|  [ Enviar ]                                               |
+|                                                           |
+|  Dicas: somente .xlsx; tamanho máx 20MB                   |
+|  Feedback: [✔] Upload aceito. Job iniciado (#id).         |
++-----------------------------------------------------------+
+
+
+Ações
+
+Seleciona arquivo → POST /api/imports (multipart/form-data: file)
+
+Em caso de 202, já redireciona para /imports (lista) ou mostra o toast.
+
+2) Lista de imports + status (concorrência-safe)
+
+Rota: /imports
+Endpoint: GET /api/imports
+
++----------------------+  +----------------------+  +----------------------+
+|  2INFO4bim.xlsx      |  |  Eng. Civil 2.xlsx   |  |  2INFO4bim.xlsx      |
+|  Importado em: 01/09 |  |  Importado em: 02/09 |  |  Importado em: 03/09 |
+|  alunos: 30          |  |  alunos:  0          |  |  alunos:  0          |
+|  Status: Finalizado  |  |  Status: Processando |  |  Status: Erro        |
+|  [ Ver Detalhes ]    |  |  [ Ver Detalhes ]    |  |  [ Ver Detalhes ]    |
++----------------------+  +----------------------+  +----------------------+
+
+
+Ações
+
+Cada card abre o detalhe /imports/:id.
+
+3) Detalhe do import + etapas (polling)
+
+Rota: /imports/:id
+Endpoint: GET /api/imports/{id}/status (polling a cada 3–5s enquanto houver etapa pendente)
+
++-----------------------------------------------------------+
+|  2INFO4bim.xlsx          Importado: 01/09  12:40          |
+|  Status geral: [Processando]                              |
+|                                                           |
+|  Etapas:                                                  |
+|   - Registros        [✔ Concluída]  linhas: 112           |
+|   - Etapa 1          [✔ Concluída]  linhas: 112           |
+|   - Etapa 2          [⏳ Em progresso]  linhas: 54         |
+|   - Etapa 3          [⏳ Aguardando]                       |
+|   - Etapa 4          [⏳ Aguardando]                       |
+|  [ Ver alunos desta planilha ]                            |
++-----------------------------------------------------------+
+
+
+Ações
+
+Botão “Ver alunos desta planilha” → /imports/:id/students.
+
+4) Alunos da planilha
+
+Rota: /imports/:id/students
+Endpoint: GET /api/imports/{id}/alunos
+
++-----------------------------------------------------------+
+|  Buscar: [__________]                                     |
+|  Ordenar por: [Nome v]                                    |
+|                                                           |
+|  #  Nome                                 Matrícula  Ações |
+|  1  ALICE SOUZA GUERRA SANTOS             2023123  [Ver]  |
+|  2  ANA JULIA ALVES NORA                  2023555  [Ver]  |
+|  3  BEATRIZ F. DE OLIVEIRA SANTANA        2023666  [Ver]  |
+|  ...                                                      |
++-----------------------------------------------------------+
+
+
+Ações
+
+Clicar em “Ver” → /students/:alunoId?importId=:id
+
+5) Detalhe do aluno (fato_nota → gráficos/quadros)
+
+Rota: /students/:alunoId (com ?importId=:id opcional)
+Endpoint: GET /api/alunos/{alunoId}?importId={guid}
+
++-----------------------------------------------------------+
+|  ALICE SOUZA GUERRA SANTOS     Matrícula: 2023123         |
+|  Import: 2INFO4bim.xlsx (01/09)                            |
+|                                                           |
+|  [Gráfico Notas por Etapa (1..4)]                         |
+|  Disciplina  | E1 | E2 | E3 | E4 | Situação               |
+|  INT.09889   |8.5 |9.4 |9.1 |8.5 | APR                    |
+|  INT.09890   |8.0 | -  | -  | -  | APR                    |
+|  ...                                                      |
+|                                                           |
+|  [Resumo] Frequência média: 98.3%   Disciplinas: 15       |
++-----------------------------------------------------------+
+
+
+Visualizações
+
+Gráfico de barras por etapa (1..4) para uma disciplina selecionada.
+
+Heatmap de notas por disciplina x etapa.
+
+Etiqueta “Sit.” (APR/REP/CAN/CUR/OUT) ao lado da disciplina.
+
+Rotas & Componentes (exemplo em React)
+/upload                    -> <UploadPage />
+/imports                   -> <ImportsListPage />
+/imports/:id               -> <ImportDetailPage />
+/imports/:id/students      -> <StudentsFromImportPage />
+/students/:alunoId         -> <StudentDetailPage />
+
+Contratos esperados (resumo)
+GET /api/imports
+[
+  {
+    "id": "guid",
+    "originalFileName": "2INFO4bim.xlsx",
+    "createdAtUtc": "2025-09-01T12:40:00Z",
+    "status": 2,
+    "error": null,
+    "alunos": 30
+  }
+]
+
+GET /api/imports/{id}/status
+{
+  "id": "guid",
+  "status": 1,
+  "error": null,
+  "stages": [
+    {"name":"Registros","etapaId":null,"status":2,"processedRows":112,"updatedAtUtc":"..."},
+    {"name":"Etapa 1","etapaId":1,"status":2,"processedRows":112,"updatedAtUtc":"..."},
+    {"name":"Etapa 2","etapaId":2,"status":1,"processedRows":54,"updatedAtUtc":"..."}
+  ],
+  "overallStatus": 1
+}
+
+GET /api/imports/{id}/alunos
+[
+  {"id":1,"nome":"ALICE SOUZA GUERRA SANTOS","matricula":"2023123"},
+  {"id":2,"nome":"ANA JULIA ALVES NORA","matricula":"2023555"}
+]
+
+GET /api/alunos/{alunoId}?importId={guid}
+{
+  "id": 1,
+  "nome": "ALICE SOUZA GUERRA SANTOS",
+  "matricula": "2023123",
+  "fatos": [
+    {"disciplina":"INT.09889","periodoAvaliativoId":1,"nota":8.5,"situacao":"APR"},
+    {"disciplina":"INT.09889","periodoAvaliativoId":2,"nota":9.4,"situacao":"APR"},
+    {"disciplina":"INT.09889","periodoAvaliativoId":3,"nota":9.1,"situacao":"APR"}
+  ]
+}
+
+Interações-chave
+
+Upload → mostra toast + redireciona para /imports.
+
+Lista → polling opcional a cada 10–15s para refrescar status.
+
+Detalhe → polling a cada 3–5s enquanto houver etapa em [Processando].
+
+Alunos → paginação e busca por nome.
+
+Aluno → gráficos (ex.: Recharts/Chart.js) usando fatos.

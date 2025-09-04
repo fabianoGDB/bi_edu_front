@@ -1,0 +1,80 @@
+@page "/imports/{Id:guid}"
+@using Importador.Front.Models
+@using Importador.Front.Services
+@inject IImportsApi Api
+
+<h2 class="h1">@_title</h2>
+
+@if (_status is null)
+{
+    <p class="sub">Carregando...</p>
+}
+else
+{
+    <div class="card">
+        <div class="card-title">Progresso Geral</div>
+        <div class="sub">Etapas concluídas</div>
+        <div class="progress"><span style="width:@OverallPct%"></span></div>
+        <div class="sub">@_done de @_total</div>
+    </div>
+
+    <div class="card section">
+        <div class="card-title">Etapas</div>
+        @foreach (var s in _status.Stages)
+        {
+            <div
+                style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)">
+                <div class="with-icon">
+                    <span class="material-symbols-outlined">checklist</span>
+                    <div>
+                        <strong>@s.Name</strong><br />
+                        <span class="sub">linhas: @s.ProcessedRows</span>
+                    </div>
+                </div>
+                @StageBadge(s.Status)
+            </div>
+        }
+        <div class="card-actions center">
+            <NavLink class="btn btn-primary" href=@($"/imports/{Id}/students")>
+                <span class="material-symbols-outlined">group</span>
+                Ver alunos desta planilha
+            </NavLink>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    ImportStatus? _status; string _title = "";
+    int _done; int _total; int OverallPct => _total == 0 ? 0 : (int)Math.Round(_done * 100.0 / _total);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+        _ = Task.Run(async () =>
+        {
+            while (_status is not null && _status.Stages.Any(s => s.Status < 2))
+            { await Task.Delay(4000); await Load(); InvokeAsync(StateHasChanged); }
+        });
+    }
+
+    async Task Load()
+    {
+        _status = await Api.GetImportStatusAsync(Id);
+        _title = _status is null ? "" : _status.Id.ToString();
+        _total = _status?.Stages.Count ?? 0;
+        _done = _status?.Stages.Count(s => s.Status == 2) ?? 0;
+    }
+
+    RenderFragment StageBadge(int status) => b =>
+    {
+        var (c, t) = status switch
+        {
+            2 => ("badge-ok", "Concluída"),
+            1 => ("badge-info", "Em progresso"),
+            0 => ("badge-warn", "Aguardando"),
+            _ => ("badge-err", "Erro")
+        };
+        b.OpenElement(0, "span"); b.AddAttribute(1, "class", $"badge {c}"); b.AddContent(2, t); b.CloseElement();
+    };
+}
