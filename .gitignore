@@ -1,0 +1,57 @@
+# Dependências
+node_modules/
+jspm_packages/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-error.log*
+yarn-debug.log*
+
+# Build / Distribuição
+build/
+dist/
+
+# Cache e arquivos temporários
+.cache/
+*.tgz
+.env*
+.nyc_output/
+
+# Arquivos de ambiente
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Visual Studio / C# (IDE .NET)
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
+
+# Outros
+*.log
+*.seed
+*.pid
+.pnp
+.pnp.js
