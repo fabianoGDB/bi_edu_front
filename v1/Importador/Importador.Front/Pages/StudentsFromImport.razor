@@ -1,17 +1,44 @@
 @page "/imports/{Id:guid}/students"
-@using Importador.Front.Services
 @using Importador.Front.Models
-@inject IImportsApi Api
+@inject HttpClient Http
+@inject NavigationManager Nav
+@using System.Net.Http.Headers
 
 <h2 class="h1">Alunos da Planilha</h2>
 <p class="sub">Import @Id</p>
 
-<div class="section">
-    <input class="input" placeholder="Buscar por nome ou matrícula..." @bind="_q" @bind:event="oninput" />
+<!-- Toast (reaproveita seu CSS .toast) -->
+@if (!string.IsNullOrWhiteSpace(_toastMsg))
+{
+    <div class="toast @(_toastKind)" style="bottom:20px; right:20px; position:fixed;">
+        @_toastMsg
+    </div>
+}
+
+<!-- Barra de ações -->
+<div class="section" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+    <!-- Buscar -->
+    <input class="input" style="flex:1 1 360px" placeholder="Buscar por nome ou matrícula..." @bind="_q"
+        @bind:event="oninput" />
+
+    <!-- Exportar CSV (Matrícula/Foto) -->
+    <button class="btn" @onclick="ExportInfoCsv" title="Exportar CSV (Matrícula/Foto)">
+        <span class="material-symbols-outlined">download</span>
+        <span>Exportar Matrícula/Foto</span>
+    </button>
+
+    <!-- Importar CSV (Matrícula/Foto) -->
+    <button class="btn" @onclick="@(() => _fileRef?.ClickAsync())" title="Importar CSV (Matrícula/Foto)">
+        <span class="material-symbols-outlined">upload</span>
+        <span>Importar Matrícula/Foto</span>
+    </button>
+
+    <!-- input file oculto -->
+    <InputFile OnChange="OnCsvSelected" accept=".csv" @ref="_fileInput" class="hide" />
 </div>
 
 <div class="card" style="padding:0;">
-    <table>
+    <table class="table">
         <thead>
             <tr>
                 <th style="width:64px">#</th>
@@ -45,8 +72,8 @@
                         <td style="text-align:center;">
                             <NavLink class="btn" href=@($"/students/{aluno.Id}?importId={Id}")
                                 aria-label="Ver detalhes do aluno">
-                                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
-                                <span>Ver</span>
+                                <span class="material-symbols-outlined">visibility</span>
+                                Ver
                             </NavLink>
                         </td>
                     </tr>
@@ -59,17 +86,39 @@
 @code {
     [Parameter] public Guid Id { get; set; }
 
+    // dados
     List<AlunoListItem> _all = new();
     List<AlunoListItem> _view = new();
     string? _q;
 
+    // upload CSV
+    ElementReference _fileRef;
+    InputFile _fileInput;
+
+    // toast
+    string? _toastMsg;
+    string _toastKind = "ok";
+
     protected override async Task OnInitializedAsync()
     {
-        _all = await Api.GetAlunosFromImportAsync(Id) ?? new();
-        _view = _all;
+        await LoadAsync();
     }
 
-    protected override void OnParametersSet()
+    async Task LoadAsync()
+    {
+        try
+        {
+            // sua API existente de alunos por import (ajuste o caminho se for diferente)
+            _all = await Http.GetFromJsonAsync<List<AlunoListItem>>($"/api/imports/{Id}/alunos") ?? new();
+            ApplyFilter();
+        }
+        catch (Exception ex)
+        {
+            ShowErr($"Erro ao carregar alunos: {ex.Message}");
+        }
+    }
+
+    void ApplyFilter()
     {
         var q = _q?.Trim().ToUpperInvariant();
         _view = string.IsNullOrEmpty(q)
@@ -79,4 +128,71 @@
         (x.Matricula?.ToUpperInvariant().Contains(q) ?? false))
         .ToList();
     }
+
+    protected override void OnParametersSet()
+    {
+        ApplyFilter();
+    }
+
+    // ===== Exportar CSV (Matrícula/Foto) =====
+    void ExportInfoCsv()
+    {
+        // baixa direto do navegador
+        Nav.NavigateTo($"/api/imports/{Id}/alunos/info/export", forceLoad: true);
+    }
+
+    // ===== Importar CSV (Matrícula/Foto) =====
+    async Task OnCsvSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file is null)
+        {
+            ShowErr("Selecione um arquivo .csv.");
+            return;
+        }
+
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            var stream = file.OpenReadStream(20 * 1024 * 1024); // 20MB
+            var fileContent = new StreamContent(stream);
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+            content.Add(fileContent, "file", file.Name);
+
+            var resp = await Http.PostAsync($"/api/imports/{Id}/alunos/info/import", content);
+            var txt = await resp.Content.ReadAsStringAsync();
+
+            if (resp.IsSuccessStatusCode)
+            {
+                // tenta ler JSON { updated: n }
+                string updated = TryGetJsonValue(txt, "updated") ?? "0";
+                ShowOk($"Importação concluída. Registros atualizados: {updated}.");
+                await LoadAsync(); // recarrega listagem (matrículas podem ter mudado)
+            }
+            else
+            {
+                var detail = TryGetJsonValue(txt, "detail") ?? TryGetJsonValue(txt, "message") ?? resp.ReasonPhrase;
+                ShowErr($"Falha ao importar: {(int)resp.StatusCode} {detail}");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErr($"Erro ao importar CSV: {ex.Message}");
+        }
+    }
+
+    static string? TryGetJsonValue(string? json, string key)
+    {
+        if (string.IsNullOrWhiteSpace(json)) return null;
+        try
+        {
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            return doc.RootElement.TryGetProperty(key, out var p) ? p.ToString() : null;
+        }
+        catch { return null; }
+    }
+
+    void ShowOk(string m) { _toastKind = "ok"; _toastMsg = m; StateHasChanged(); _ = HideToastSoon(); }
+    void ShowErr(string m) { _toastKind = "err"; _toastMsg = m; StateHasChanged(); _ = HideToastSoon(); }
+    async Task HideToastSoon() { await Task.Delay(3200); _toastMsg = null; StateHasChanged(); }
 }
