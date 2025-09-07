@@ -1,0 +1,304 @@
+@page "/students/{AlunoId:int}"
+@using Importador.Front.Models
+@using Importador.Front.Services
+@inject IAlunosApi Api
+@inject NavigationManager Nav
+
+<!-- Cabeçalho -->
+<div class="section" style="margin-top:8px">
+    <a class="btn btn-ghost" href="@BackUrl()" aria-label="Voltar para lista">
+        <span class="material-symbols-outlined">arrow_back</span> Voltar para Lista
+    </a>
+</div>
+
+<div class="grid" style="grid-template-columns:280px 1fr 320px; gap:20px;">
+    <!-- Foto + identificação -->
+    <div class="card" style="padding:16px">
+        <div style="aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#0f1316;">
+            @if (!string.IsNullOrWhiteSpace(_aluno?.FotoUrl))
+            {
+                <img src="@_aluno!.FotoUrl" alt="@_aluno!.Nome" style="width:100%;height:100%;object-fit:cover" />
+            }
+        </div>
+        <div style="margin-top:12px">
+            <div class="h2" style="font-size:16px;margin:0">@_aluno?.Nome</div>
+            <div class="sub" style="font-size:12px">Matrícula: @_aluno?.Matricula</div>
+        </div>
+    </div>
+
+    <!-- Quadro Resumo -->
+    <div class="card" style="padding:16px">
+        <div style="overflow-x:auto">
+            <table class="table" style="min-width:680px">
+                <thead>
+                    <tr>
+                        <th style="width:120px;background:#0b3b28;color:var(--green)">Freq (%)</th>
+                        <th class="td-center" style="width:80px">Bim</th>
+                        <th class="td-center" style="width:100px">Áreas</th>
+                        <th class="td-center" style="width:120px">Disciplinas</th>
+                        <th class="td-center" style="background:#0b3b28;color:var(--green)">Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td rowspan="6" class="td-center" style="background:#0b3b28;color:var(--green);font-weight:700">
+                            @_aluno?.Frequencia.ToString("0.##")%
+                        </td>
+                    </tr>
+                    @foreach (var row in _resumo)
+                    {
+                        <tr>
+                            <td class="td-center" style="background:#14191c;font-weight:600">@row.Bim</td>
+                            <td class="td-center">@row.Areas</td>
+                            <td class="td-center">@row.Disciplinas</td>
+                            <td class="td-center">
+                                <span class="badge badge-ok" style="margin-right:6px">@row.Aprov</span>
+                                <span class="badge badge-err">@row.Reprov</span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Status / Áreas em Conselho -->
+    <div class="grid" style="grid-template-columns:1fr;gap:16px">
+        <div class="card">
+            <div class="card-title">Situação</div>
+            <div style="background:#14191c;border-radius:12px;padding:24px;text-align:center">
+                <span class="badge badge-ok" style="font-size:12px">@(_aluno?.Situacao ?? "—")</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Áreas em Conselho</div>
+            <div style="background:#14191c;border-radius:12px;padding:24px;text-align:center">
+                @if (_areasConselho.Count == 0)
+                {
+                    <span class="sub" style="font-size:12px">Nenhuma</span>
+                }
+                else
+                {
+                    <span>@string.Join(", ", _areasConselho)</span>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Heatmap Notas -->
+<div class="card section">
+    <div class="card-title">Detalhamento de Notas por Área</div>
+    <div style="overflow-x:auto">
+        <table class="table" style="border-collapse:separate;border-spacing:0">
+            <thead>
+                <tr>
+                    <th style="min-width:180px">Aluno</th>
+                    <th class="td-center" style="width:72px">Bim</th>
+                    @foreach (var area in _grid.Keys)
+                    {
+                        <th class="td-center" colspan="@_grid[area].Count">@area</th>
+                    }
+                </tr>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    @foreach (var area in _grid.Keys)
+                    {
+                        @foreach (var disc in _grid[area].Keys)
+                        {
+                            <th class="td-center" style="font-size:12px">@disc</th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var etapa in _etapas)
+                {
+                    <tr>
+                        @if (etapa == _etapas[0])
+                        {
+                            <td rowspan="@_etapas.Count" class="td-center" style="background:#14191c;font-weight:700">
+                                @_aluno?.Nome</td>
+                        }
+                        <td class="td-center" style="background:#14191c;font-weight:700">@etapa</td>
+
+                        @foreach (var area in _grid.Keys)
+                        {
+                            @foreach (var disc in _grid[area].Keys)
+                            {
+                                var val = _grid[area][disc].TryGetValue(etapa, out var n) ? n : (double?)null;
+                                <td class="td-center @Heat(val)" style="font-weight:@(val.HasValue ? "700" : "400")">
+                                    @(val.HasValue? val.Value.ToString(val % 1 == 0 ? "0" : "0.0") : "-")
+                                </td>
+                            }
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Observações (exibe se existirem; ganchos para importar/exportar CSV de observações) -->
+<div class="card section">
+    <div class="card-title with-icon">
+        <span class="material-symbols-outlined">chat</span> Observações Pedagógicas
+    </div>
+
+    <div class="card-actions" style="display:flex;gap:8px">
+        <button class="btn btn-ghost" title="Importar Observações (CSV/XLSX)" @onclick="() => _fileObs?.ClickAsync()">
+            <span class="material-symbols-outlined">upload</span> Importar Observações
+        </button>
+        <button class="btn btn-ghost" title="Exportar Planilha Base" @onclick="ExportarObsBase">
+            <span class="material-symbols-outlined">download</span> Exportar Planilha Base
+        </button>
+    </div>
+
+    <InputFile @ref="_fileObs" OnChange="OnObsUpload" accept=".csv,.xlsx,.xls" style="display:none" />
+
+    @if (_observacoes.Count == 0)
+    {
+        <p class="sub">Nenhuma observação registrada.</p>
+    }
+    else
+    {
+        <div style="display:flex;flex-direction:column;gap:14px">
+            @foreach (var o in _observacoes)
+            {
+                <div class="card" style="padding:14px;background:#14191c">
+                    <div style="display:flex;justify-content:space-between;gap:12px">
+                        <span class="badge badge-info">@o.Disciplina</span>
+                        <span class="sub" style="font-size:12px">@o.Professor • @o.Data.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div style="margin-top:8px">@o.Texto</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public int AlunoId { get; set; }
+    [Parameter] public Guid? ImportId { get; set; }
+
+    // dados
+    AlunoDetalhe? _aluno;
+    // grid[Area][Disciplina][Etapa] = nota
+    Dictionary<string, Dictionary<string, Dictionary<string, double?>>> _grid = new();
+    readonly List<string> _etapas = new() { "1º", "2º", "3º", "4º", "Rec", "Ano" };
+
+    // resumo
+    record LinhaResumo(string Bim, int Areas, int Disciplinas, int Aprov, int Reprov);
+    List<LinhaResumo> _resumo = new();
+    List<string> _areasConselho = new();
+
+    // observações (mock simples; conecte ao seu endpoint se desejar)
+    record Obs(string Disciplina, string Texto, string Professor, DateTime Data);
+    List<Obs> _observacoes = new();
+
+    InputFile? _fileObs;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // importId da querystring (se presente)
+        var uri = new Uri(Nav.Uri);
+        var qs = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        if (Guid.TryParse(qs.Get("importId"), out var imp)) ImportId = imp;
+
+        // busca aluno + fatos
+        _aluno = await Api.GetAlunoAsync(AlunoId, ImportId);
+
+        // monta grid por Área/Disciplina/Etapa
+        // supõe que AlunoDetalhe.Fatos traga: Disciplina (sigla), Area, PeriodoAvaliativoId (1..4/99 Rec/100 Ano), Nota,
+        Situacao
+    foreach (var f in _aluno?.Fatos ?? Enumerable.Empty<AlunoFato>())
+        {
+            var area = f.Area ?? "Área";
+            var disc = f.Disciplina ?? "DISC";
+            var etapa = f.PeriodoAvaliativoId switch
+            {
+                1 => "1º",
+                2 => "2º",
+                3 => "3º",
+                4 => "4º",
+                98 => "Rec", // ajuste conforme seu back
+                99 => "Ano",
+                _ => "Ano"
+            };
+
+            if (!_grid.TryGetValue(area, out var porDisc))
+                _grid[area] = porDisc = new();
+
+            if (!porDisc.TryGetValue(disc, out var porEtapa))
+                porDisc[disc] = porEtapa = _etapas.ToDictionary(e => e, e => (double?)null);
+
+            porEtapa[etapa] = f.Nota;
+        }
+
+        // linham resumo básica (preencha conforme seu domínio)
+        _resumo = new()
+{
+new("1º", _grid.Count, _grid.SelectMany(g=>g.Value.Keys).Distinct().Count(), 1, 0),
+new("2º", _grid.Count, _grid.SelectMany(g=>g.Value.Keys).Distinct().Count(), 0, 1),
+new("3º", _grid.Count, _grid.SelectMany(g=>g.Value.Keys).Distinct().Count(), 1, 0),
+new("4º", _grid.Count, _grid.SelectMany(g=>g.Value.Keys).Distinct().Count(), 1, 0),
+new("Rec", 0, 0, 0, 1),
+};
+
+        // áreas em conselho (ex.: média anual < 6.0)
+        _areasConselho = _grid
+        .Where(a =>
+        a.Value.Values.Any(d =>
+        MediaAnual(d) is double m && m < 6.0))
+        .Select(a => a.Key).Distinct().ToList();
+
+        // mock de observações
+        _observacoes = new()
+{
+new("MAT12345","Aluno apresenta excelente desempenho em matemática.","Prof. Silva", DateTime.Today.AddDays(-21)),
+new("INT09889","Melhoria significativa nas últimas avaliações.","Prof. Santos", DateTime.Today.AddDays(-14)),
+};
+    }
+
+    static double? MediaAnual(Dictionary<string, double?> porEtapa)
+    {
+        var vals = porEtapa.Where(kv => kv.Key is "1º" or "2º" or "3º" or "4º").Select(kv => kv.Value).Where(v =>
+        v.HasValue).Select(v => v!.Value).ToList();
+        return vals.Count == 0 ? null : vals.Average();
+    }
+
+    // classes de cor (heatmap)
+    string Heat(double? n)
+    {
+        if (n is null) return "";
+        var v = n.Value;
+        if (v >= 8.5) return "text-emerald-400"; // verde forte sobre dark
+        if (v >= 7.0) return "text-blue-300";
+        if (v >= 6.0) return "text-yellow-300";
+        return "text-red-400";
+    }
+
+    string BackUrl() => ImportId.HasValue ? $"/imports/{ImportId}/students" : "/imports";
+
+    // Observações: importar arquivo (hook para seu endpoint de observações)
+    async Task OnObsUpload(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file is null) return;
+
+        // implemente POST para /api/observacoes/import (ou equivalente)
+        // usando MultipartFormDataContent com file.OpenReadStream()
+        // Aqui só exibimos um toast simples:
+        Console.WriteLine($"[OBS] arquivo recebido: {file.Name}");
+    }
+
+    // Exporta planilha base (modelo)
+    void ExportarObsBase()
+    {
+        // se já tiver endpoint, redirecione:
+        // Nav.NavigateTo($"/api/observacoes/base?alunoId={AlunoId}", forceLoad: true);
+        Console.WriteLine("[OBS] export base solicitado");
+    }
+}
