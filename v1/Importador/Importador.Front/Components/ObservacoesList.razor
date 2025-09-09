@@ -1,0 +1,37 @@
+﻿@using Importador.Front.Models
+@code {
+    [Parameter] public List<ObservacaoItem> Items { get; set; } = new();
+}
+
+<div class="card" style="padding:0">
+    <table class="table" style="margin:0">
+        <thead>
+            <tr>
+                <th style="width:160px">Código</th>
+                <th>Observação</th>
+                <th style="width:200px">Professor</th>
+                <th style="width:140px">Data</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Items is null || Items.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" class="sub" style="padding:14px">Nenhum registro.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var o in Items)
+                {
+                    <tr>
+                        <td>@o.Codigo</td>
+                        <td>@o.Texto</td>
+                        <td>@(string.IsNullOrWhiteSpace(o.Professor) ? o.Autor : o.Professor)</td>
+                        <td>@(o.Data?.ToLocalTime().ToString("dd/MM/yyyy") ?? "-")</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

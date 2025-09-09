@@ -1,25 +1,15 @@
-using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+// Program.cs  (exemplo)
 using Importador.Front;
 using Importador.Front.Services;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 
-// Base da API (ajuste para o seu backend)
-var apiBase = builder.Configuration["ApiBaseUrl"] ?? "http://localhost:5155";
+// Em appsettings.json:  "Backend": { "BaseUrl": "https://localhost:5001" }
+var baseUrl = builder.Configuration["Backend:BaseUrl"]
+              ?? builder.HostEnvironment.BaseAddress;
 
-// HttpClient único para toda a app
-builder.Services.AddScoped(sp =>
-{
-    var http = new HttpClient { BaseAddress = new Uri(apiBase), Timeout = TimeSpan.FromSeconds(100) };
-    http.DefaultRequestHeaders.Accept.Clear();
-    http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-    return http;
-});
-
-// Serviços de API
-builder.Services.AddScoped<IImportsApi, ImportsApi>();
-builder.Services.AddScoped<IAlunosApi, AlunosApi>();
+builder.Services.AddBackendApi(new Uri(baseUrl));
 
 await builder.Build().RunAsync();

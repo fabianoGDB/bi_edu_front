@@ -28,6 +28,22 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Components/NotasHeatmap.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xOb3Rhc0hlYXRtYXAucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Components/ObservacoesList.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xPYnNlcnZhY29lc0xpc3QucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Components/StudentCouncil.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTdHVkZW50Q291bmNpbC5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Components/StudentInfoCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTdHVkZW50SW5mb0NhcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -38,10 +54,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Pages/Imports.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSW1wb3J0cy5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Pages/StudentCouncil.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU3R1ZGVudENvdW5jaWwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Pages/StudentDetail.razor]

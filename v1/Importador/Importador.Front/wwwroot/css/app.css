@@ -106,6 +106,154 @@ table .btn-primary:hover {
 }
 
 
+/* ===== Listagem Base (card de listas + toolbar + tabela) ===== */
+.list-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 0;
+}
+
+    /* Cabeçalho do card (título + ações) */
+    .list-card .list-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+    }
+
+.list-header .title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+}
+
+    .list-header .title .material-symbols-outlined {
+        color: var(--green);
+    }
+
+/* Barra de ferramentas da lista (busca + filtros + botões) */
+.list-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+}
+
+    .list-toolbar .input {
+        flex: 1 1 360px;
+    }
+
+/* Tabela base */
+.tbl {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .tbl thead th {
+        background: #0f1a17;
+        color: var(--text);
+        font-weight: 600;
+        padding: 12px 12px;
+        border-bottom: 1px solid var(--line);
+        text-align: left;
+    }
+
+    .tbl tbody td {
+        padding: 14px 12px;
+        border-bottom: 1px solid var(--line);
+        color: var(--text);
+    }
+
+    .tbl tbody tr {
+        background: var(--surface);
+    }
+
+        .tbl tbody tr:hover td {
+            background: #0e231c;
+        }
+
+/* colunas utilitárias */
+.col-n {
+    width: 64px;
+    text-align: center;
+    color: var(--sub);
+}
+
+.col-sm {
+    width: 120px;
+}
+
+.col-md {
+    width: 180px;
+}
+
+.td-center {
+    text-align: center;
+}
+
+/* ações (botões compactos) */
+.tbl .btn {
+    background: #1f252a;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+    gap: 6px;
+}
+
+    .tbl .btn:hover {
+        background: #0e231c;
+        border-color: var(--green-2);
+    }
+
+    .tbl .btn .material-symbols-outlined {
+        color: var(--green);
+    }
+
+/* rodapé da lista (paginaçao/resumo) */
+.list-footer {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--sub);
+    border-top: 1px solid var(--line);
+}
+
+/* Botão-label para input file invisível (permite clicar sem JS) */
+.filebtn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #1f252a;
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+    .filebtn:hover {
+        background: #0e231c;
+        border-color: var(--green-2);
+    }
+
+    .filebtn input[type="file"] {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+
 /* =========================================================== */
 
 /* botões genéricos */
@@ -198,6 +346,22 @@ table .btn-primary:hover {
 
 /* Badge "Em breve" (verde suave) */
 .badge-info{ background:#0b2a1f; color:var(--green); }
+
+
+/* estados do conselho */
+.council-state { padding:18px }
+.state-row { display:flex; gap:12px; align-items:center }
+.state-title { font-weight:700 }
+
+/* spinner neutro (usa paleta já existente) */
+.spinner{
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);
+  border-top-color: var(--green);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin{ to{ transform: rotate(360deg) } }
+
 
 /* responsivo */
 @media (max-width: 960px){

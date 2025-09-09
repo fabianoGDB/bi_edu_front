@@ -1,86 +1,107 @@
 @page "/imports/{Id:guid}/students"
+@using System.Net.Http.Headers
 @using Importador.Front.Models
 @inject HttpClient Http
 @inject NavigationManager Nav
-@using System.Net.Http.Headers
 
 <h2 class="h1">Alunos da Planilha</h2>
 <p class="sub">Import @Id</p>
 
-<!-- Toast (reaproveita seu CSS .toast) -->
 @if (!string.IsNullOrWhiteSpace(_toastMsg))
 {
-    <div class="toast @(_toastKind)" style="bottom:20px; right:20px; position:fixed;">
+    <div class="toast @(_toastKind)" style="bottom:20px; right:20px; position:fixed">
         @_toastMsg
     </div>
 }
 
-<!-- Barra de ações -->
-<div class="section" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-    <!-- Buscar -->
-    <input class="input" style="flex:1 1 360px" placeholder="Buscar por nome ou matrícula..." @bind="_q"
-        @bind:event="oninput" />
+<div class="list-card">
 
-    <!-- Exportar CSV (Matrícula/Foto) -->
-    <button class="btn" @onclick="ExportInfoCsv" title="Exportar CSV (Matrícula/Foto)">
-        <span class="material-symbols-outlined">download</span>
-        <span>Exportar Matrícula/Foto</span>
-    </button>
+    <!-- Cabeçalho -->
+    <div class="list-header">
+        <div class="title">
+            <span class="material-symbols-outlined">group</span>
+            <span>Lista de Alunos</span>
+        </div>
 
-    <!-- Importar CSV (Matrícula/Foto) -->
-    <button class="btn" @onclick="@(() => _fileRef?.ClickAsync())" title="Importar CSV (Matrícula/Foto)">
-        <span class="material-symbols-outlined">upload</span>
-        <span>Importar Matrícula/Foto</span>
-    </button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+            <!-- Exportar CSV (Matrícula/Foto) -->
+            <button class="btn" title="Exportar CSV (Matrícula/Foto)" @onclick="ExportInfoCsv">
+                <span class="material-symbols-outlined">download</span>
+                <span>Exportar Matrícula/Foto</span>
+            </button>
 
-    <!-- input file oculto -->
-    <InputFile OnChange="OnCsvSelected" accept=".csv" @ref="_fileInput" class="hide" />
-</div>
+            <!-- Importar CSV (Matrícula/Foto) -> input escondido dentro do label -->
+            <label class="filebtn" title="Importar CSV (Matrícula/Foto)">
+                <span class="material-symbols-outlined">upload</span>
+                <span>Importar Matrícula/Foto</span>
+                <InputFile OnChange="OnCsvSelected" accept=".csv" />
+            </label>
+        </div>
+    </div>
 
-<div class="card" style="padding:0;">
-    <table class="table">
-        <thead>
-            <tr>
-                <th style="width:64px">#</th>
-                <th>Nome</th>
-                <th style="width:180px">Matrícula</th>
-                <th style="width:120px; text-align:center;">Ações</th>
-            </tr>
-        </thead>
+    <!-- Toolbar -->
+    <div class="list-toolbar">
+        <input class="input" placeholder="Buscar por nome ou matrícula..."
+               @bind="_q" @bind:event="oninput" />
+        <!-- (Opcional) seletor de ordenação / filtros -->
+        <!-- <select class="input" style="max-width:220px"><option>Nome</option></select> -->
+    </div>
 
-        <tbody>
-            @if (_view is null)
-            {
+    <!-- Tabela -->
+    <div style="overflow:auto">
+        <table class="tbl">
+            <thead>
                 <tr>
-                    <td colspan="4" class="sub" style="padding:18px;">Carregando...</td>
+                    <th class="col-n">#</th>
+                    <th>Nome</th>
+                    <th class="col-md">Matrícula</th>
+                    <th class="col-sm td-center">Ações</th>
                 </tr>
-            }
-            else if (_view.Count == 0)
-            {
-                <tr>
-                    <td colspan="4" class="sub" style="padding:18px;">Nenhum aluno encontrado.</td>
-                </tr>
-            }
-            else
-            {
-                @foreach (var (aluno, idx) in _view.Select((a, i) => (a, i + 1)))
+            </thead>
+
+            <tbody>
+                @if (_view is null)
                 {
                     <tr>
-                        <td>@idx</td>
-                        <td>@aluno.Nome</td>
-                        <td>@aluno.Matricula</td>
-                        <td style="text-align:center;">
-                            <NavLink class="btn" href=@($"/students/{aluno.Id}?importId={Id}")
-                                aria-label="Ver detalhes do aluno">
-                                <span class="material-symbols-outlined">visibility</span>
-                                Ver
-                            </NavLink>
-                        </td>
+                        <td colspan="4" class="sub" style="padding:18px">Carregando…</td>
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+                else if (_view.Count == 0)
+                {
+                    <tr>
+                        <td colspan="4" class="sub" style="padding:18px">Nenhum aluno encontrado.</td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var (aluno, idx) in _view.Select((a, i) => (a, i + 1)))
+                    {
+                        <tr>
+                            <td class="col-n">@idx</td>
+                            <td>@aluno.Nome</td>
+                            <td class="col-md">@aluno.Matricula</td>
+                            <td class="col-sm td-center">
+                                <NavLink class="btn" href=@($"/students/{aluno.Id}?importId={Id}")>
+                                    <span class="material-symbols-outlined">visibility</span>
+                                    <span>Ver</span>
+                                </NavLink>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Rodapé (página/resumo – estático por enquanto) -->
+    <div class="list-footer">
+        <span>Mostrando @_view.Count de @_all.Count alunos</span>
+        <div style="display:flex; gap:8px">
+            <button class="btn btn-ghost" disabled>Anterior</button>
+            <span class="sub">Página 1 de 1</span>
+            <button class="btn btn-ghost" disabled>Próximo</button>
+        </div>
+    </div>
 </div>
 
 @code {
@@ -90,10 +111,6 @@
     List<AlunoListItem> _all = new();
     List<AlunoListItem> _view = new();
     string? _q;
-
-    // upload CSV
-    ElementReference _fileRef;
-    InputFile _fileInput;
 
     // toast
     string? _toastMsg;
@@ -108,7 +125,6 @@
     {
         try
         {
-            // sua API existente de alunos por import (ajuste o caminho se for diferente)
             _all = await Http.GetFromJsonAsync<List<AlunoListItem>>($"/api/imports/{Id}/alunos") ?? new();
             ApplyFilter();
         }
@@ -122,40 +138,31 @@
     {
         var q = _q?.Trim().ToUpperInvariant();
         _view = string.IsNullOrEmpty(q)
-        ? _all
-        : _all.Where(x =>
-        (x.Nome?.ToUpperInvariant().Contains(q) ?? false) ||
-        (x.Matricula?.ToUpperInvariant().Contains(q) ?? false))
-        .ToList();
+            ? _all
+            : _all.Where(x =>
+                (x.Nome?.ToUpperInvariant().Contains(q) ?? false) ||
+                (x.Matricula?.ToUpperInvariant().Contains(q) ?? false))
+              .ToList();
     }
 
     protected override void OnParametersSet()
-    {
-        ApplyFilter();
-    }
+        => ApplyFilter();
 
-    // ===== Exportar CSV (Matrícula/Foto) =====
+    /* ========== Exportar CSV (Matrícula/Foto) ========== */
     void ExportInfoCsv()
-    {
-        // baixa direto do navegador
-        Nav.NavigateTo($"/api/imports/{Id}/alunos/info/export", forceLoad: true);
-    }
+        => Nav.NavigateTo($"/api/imports/{Id}/alunos/info/export", forceLoad: true);
 
-    // ===== Importar CSV (Matrícula/Foto) =====
+    /* ========== Importar CSV (Matrícula/Foto) ========== */
     async Task OnCsvSelected(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        if (file is null)
-        {
-            ShowErr("Selecione um arquivo .csv.");
-            return;
-        }
+        if (file is null) { ShowErr("Selecione um arquivo .csv."); return; }
 
         try
         {
             using var content = new MultipartFormDataContent();
-            var stream = file.OpenReadStream(20 * 1024 * 1024); // 20MB
-            var fileContent = new StreamContent(stream);
+            using var stream = file.OpenReadStream(20 * 1024 * 1024); // 20MB
+            using var fileContent = new StreamContent(stream);
             fileContent.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
             content.Add(fileContent, "file", file.Name);
 
@@ -164,10 +171,9 @@
 
             if (resp.IsSuccessStatusCode)
             {
-                // tenta ler JSON { updated: n }
-                string updated = TryGetJsonValue(txt, "updated") ?? "0";
+                var updated = TryGetJsonValue(txt, "updated") ?? "0";
                 ShowOk($"Importação concluída. Registros atualizados: {updated}.");
-                await LoadAsync(); // recarrega listagem (matrículas podem ter mudado)
+                await LoadAsync();
             }
             else
             {
