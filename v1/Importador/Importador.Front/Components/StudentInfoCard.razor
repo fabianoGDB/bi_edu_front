@@ -1,101 +1,47 @@
 @using Importador.Front.Models
-@code {
-    [Parameter] public AlunoDetalhe? Aluno { get; set; }
-}
+@inherits ComponentBase
 
-<div class="grid" style="grid-template-columns:280px 1fr 320px; gap:20px;">
-    <!-- Foto + identificação -->
-    <div class="card" style="padding:16px;">
-        <div style="aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#0f1316;">
-            @if (!string.IsNullOrWhiteSpace(Aluno?.FotoUrl))
-            {
-                <img src="@Aluno!.FotoUrl" alt="@Aluno!.Nome" style="width:100%;height:100%;object-fit:cover" />
-            }
-        </div>
-        <div style="margin-top:12px">
-            <div class="h2" style="font-size:16px;margin:0">@Aluno?.Nome</div>
+<div class="card" style="display:grid;grid-template-columns:180px 1fr;gap:16px;">
+    <div style="background:#0f1316;border-radius:12px;overflow:hidden;">
+        @if (!string.IsNullOrWhiteSpace(Aluno?.FotoUrl))
+        {
+            <img src="@Aluno!.FotoUrl" alt="@Aluno!.Nome" style="width:100%;height:180px;object-fit:cover" />
+        }
+        else
+        {
+            <div style="height:180px;display:flex;align-items:center;justify-content:center;color:#7f8b94">
+                <span class="material-symbols-outlined">account_box</span>
+            </div>
+        }
+        <div style="padding:10px;text-align:center">
+            <div style="font-weight:800">@Aluno?.Nome</div>
             <div class="sub">Matrícula: @Aluno?.Matricula</div>
         </div>
     </div>
 
-    <!-- Tabela de Resumo -->
-    <div class="card" style="padding:0;">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th style="width:120px;background:#0b3b28;color:var(--green)">Freq (%)</th>
-                    <th class="td-center" style="width:80px">Bim</th>
-                    <th class="td-center" style="width:100px">Áreas</th>
-                    <th class="td-center" style="width:120px">Disciplinas</th>
-                    <th class="td-center" style="width:120px">Situação</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td rowspan="@((Aluno?.ResumoLinhas?.Count ?? 0) + 1)"
-                        style="text-align:center;font-weight:700;background:#062e22">
-                        @(Aluno?.Frequencia?.ToString("0.##") ?? "-")%
-                    </td>
-                    <td class="td-center">1º</td>
-                    <td class="td-center">@Aluno?.ResumoLinhas?.FirstOrDefault(l => l.Bimestre == "1º")?.Areas</td>
-                    <td class="td-center">@Aluno?.ResumoLinhas?.FirstOrDefault(l => l.Bimestre == "1º")?.Disciplinas</td>
-                    <td class="td-center">
-                        <span class="badge badge-ok">@Aluno?.ResumoLinhas?.FirstOrDefault(l => l.Bimestre == "1º")?.Aprovadas</span>
-                        <span class="badge badge-err">@Aluno?.ResumoLinhas?.FirstOrDefault(l => l.Bimestre == "1º")?.Reprovadas</span>
-                    </td>
-                </tr>
+    <div>
+        <div class="card-title">Situação geral</div>
 
-                @foreach (var l in (Aluno?.ResumoLinhas ?? new()))
-                {
-                    if (l.Bimestre == "1º") { continue; }
-                    <tr>
-                        <td class="td-center">@l.Bimestre</td>
-                        <td class="td-center">@l.Areas</td>
-                        <td class="td-center">@l.Disciplinas</td>
-                        <td class="td-center">
-                            <span class="badge badge-ok">@l.Aprovadas</span>
-                            <span class="badge badge-err">@l.Reprovadas</span>
-                        </td>
-                    </tr>
-                }
-
-                <tr>
-                    <td class="td-center">Ano</td>
-                    <td class="td-center">@Aluno?.TotalAreas</td>
-                    <td class="td-center">@Aluno?.TotalDisciplinas</td>
-                    <td class="td-center">
-                        <span class="badge @(Aluno?.Situacao=="APR"?"badge-ok":"badge-err")">@Aluno?.Situacao</span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Situação + Áreas em Conselho -->
-    <div class="grid" style="grid-template-columns:1fr;gap:20px;">
-        <div class="card">
-            <div class="card-title">Situação</div>
-            <div>
-                <span class="badge @(Aluno?.Situacao=="APR"?"badge-ok":"badge-err")"
-                      style="font-size:12px">@Aluno?.Situacao</span>
+        <div class="council-state">
+            <div class="state-row">
+                <span class="material-symbols-outlined">percent</span>
+                <div>
+                    <div class="state-title">Frequência</div>
+                    <div class="sub">@Aluno?.Frequencia?.ToString("0.##") ?? "-"%</div>
+                </div>
             </div>
-        </div>
 
-        <div class="card">
-            <div class="card-title">Áreas em Conselho</div>
-            @if (Aluno?.AreasEmConselho?.Count > 0)
-            {
-                <ul style="margin:0;padding-left:16px">
-                    @foreach (var a in Aluno!.AreasEmConselho)
-                    {
-                        <li>@a</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <div class="sub">Nenhuma</div>
-            }
+            <div class="state-row" style="margin-top:10px">
+                <span class="material-symbols-outlined">verified</span>
+                <div>
+                    <div class="state-title">Situação</div>
+                    <div class="sub">@((Aluno?.Situacao ?? "-"))</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+@code {
+    [Parameter] public AlunoDetalhe? Aluno { get; set; }
+}

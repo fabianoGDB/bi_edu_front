@@ -3,87 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\models\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:models\\models.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\components\\studentcouncil.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:components\\studentcouncil.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\pages\\studentdetail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
+      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:pages\\studentdetail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\alunosapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\alunosapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\ialunosapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\ialunosapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\pages\\studentdetail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:pages\\studentdetail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\observacoesapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\observacoesapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\iobservacoesapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\iobservacoesapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\importsapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\importsapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\iimportsapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\iimportsapi.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\services\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:services\\servicecollectionextensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\pages\\studentsfromimport.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:pages\\studentsfromimport.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:wwwroot\\css\\app.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\docto\\AppData\\Local\\Temp\\.vsdbgsrc\\f4e2763f41670255106ae126ddceaaa7ac0a7e0c2dadd71bf5ff99eef8adf49a\\ListenOptionsHttpsExtensions.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\components\\observacoeslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:components\\observacoeslist.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\components\\notasheatmap.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:components\\notasheatmap.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\components\\studentinfocard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:components\\studentinfocard.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:_imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\pages\\importdetail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:pages\\importdetail.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|c:\\users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\importador\\importador.front\\pages\\imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}",
-      "RelativeMoniker": "D:0:0:{4679F184-E024-ABC7-7D1B-F736B2C272AF}|Importador.Front.csproj|solutionrelative:pages\\imports.razor||{40D31677-CBC0-4297-A9EF-89D907823A98}"
     }
   ],
   "DocumentGroupContainers": [
@@ -93,279 +22,46 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 18,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-09-08T20:54:03.063Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Program.cs",
-              "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Program.cs",
-              "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAZAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:53:03.895Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "ObservacoesApi.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ObservacoesApi.cs",
-              "RelativeDocumentMoniker": "Services\\ObservacoesApi.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ObservacoesApi.cs",
-              "RelativeToolTip": "Services\\ObservacoesApi.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAiwCcAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:51:48.962Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "IObservacoesApi.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\IObservacoesApi.cs",
-              "RelativeDocumentMoniker": "Services\\IObservacoesApi.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\IObservacoesApi.cs",
-              "RelativeToolTip": "Services\\IObservacoesApi.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:51:26.442Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "AlunosApi.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\AlunosApi.cs",
-              "RelativeDocumentMoniker": "Services\\AlunosApi.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\AlunosApi.cs",
-              "RelativeToolTip": "Services\\AlunosApi.cs",
-              "ViewState": "AgIAABcAAAAAAAAAAAAiwDMAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:51:07.897Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "IAlunosApi.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\IAlunosApi.cs",
-              "RelativeDocumentMoniker": "Services\\IAlunosApi.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\IAlunosApi.cs",
-              "RelativeToolTip": "Services\\IAlunosApi.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:51:01.393Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "ImportsApi.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ImportsApi.cs",
-              "RelativeDocumentMoniker": "Services\\ImportsApi.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ImportsApi.cs",
-              "RelativeToolTip": "Services\\ImportsApi.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:50:50.929Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "IImportsApi.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\IImportsApi.cs",
-              "RelativeDocumentMoniker": "Services\\IImportsApi.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\IImportsApi.cs",
-              "RelativeToolTip": "Services\\IImportsApi.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:50:30.449Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "ServiceCollectionExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ServiceCollectionExtensions.cs",
-              "RelativeDocumentMoniker": "Services\\ServiceCollectionExtensions.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ServiceCollectionExtensions.cs",
-              "RelativeToolTip": "Services\\ServiceCollectionExtensions.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAdAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T20:49:55.985Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "app.css",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\wwwroot\\css\\app.css",
-              "RelativeDocumentMoniker": "wwwroot\\css\\app.css",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\wwwroot\\css\\app.css",
-              "RelativeToolTip": "wwwroot\\css\\app.css",
-              "ViewState": "AgIAAN4AAAAAAAAAAAAuwP0AAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2025-09-08T20:19:59.898Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "ListenOptionsHttpsExtensions.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\AppData\\Local\\Temp\\.vsdbgsrc\\f4e2763f41670255106ae126ddceaaa7ac0a7e0c2dadd71bf5ff99eef8adf49a\\ListenOptionsHttpsExtensions.cs",
-              "RelativeDocumentMoniker": "..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\f4e2763f41670255106ae126ddceaaa7ac0a7e0c2dadd71bf5ff99eef8adf49a\\ListenOptionsHttpsExtensions.cs",
-              "ToolTip": "C:\\Users\\docto\\AppData\\Local\\Temp\\.vsdbgsrc\\f4e2763f41670255106ae126ddceaaa7ac0a7e0c2dadd71bf5ff99eef8adf49a\\ListenOptionsHttpsExtensions.cs [Read Only]",
-              "RelativeToolTip": "..\\..\\..\\..\\..\\..\\..\\AppData\\Local\\Temp\\.vsdbgsrc\\f4e2763f41670255106ae126ddceaaa7ac0a7e0c2dadd71bf5ff99eef8adf49a\\ListenOptionsHttpsExtensions.cs [Read Only]",
-              "ViewState": "AgIAAHQAAAAAAAAAAAAAAGIAAAADAAAAAQAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T17:58:04.176Z",
-              "EditorCaption": " [Read Only]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "StudentCouncil.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\StudentCouncil.razor",
-              "RelativeDocumentMoniker": "Components\\StudentCouncil.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\StudentCouncil.razor",
-              "RelativeToolTip": "Components\\StudentCouncil.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAcAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:56:47.262Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "StudentsFromImport.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\StudentsFromImport.razor",
-              "RelativeDocumentMoniker": "Pages\\StudentsFromImport.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\StudentsFromImport.razor",
-              "RelativeToolTip": "Pages\\StudentsFromImport.razor",
-              "ViewState": "AgIAAK8AAAAAAAAAAAAIwMAAAAALAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:56:01.63Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "ObservacoesList.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\ObservacoesList.razor",
-              "RelativeDocumentMoniker": "Components\\ObservacoesList.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\ObservacoesList.razor",
-              "RelativeToolTip": "Components\\ObservacoesList.razor",
-              "ViewState": "AgIAAAEAAAAAAAAAAAAowDUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:55:35.103Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "NotasHeatmap.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\NotasHeatmap.razor",
-              "RelativeDocumentMoniker": "Components\\NotasHeatmap.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\NotasHeatmap.razor",
-              "RelativeToolTip": "Components\\NotasHeatmap.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACoAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:55:20.005Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "_Imports.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\_Imports.razor",
-              "RelativeDocumentMoniker": "_Imports.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\_Imports.razor",
-              "RelativeToolTip": "_Imports.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:54:15.153Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "ImportDetail.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\ImportDetail.razor",
-              "RelativeDocumentMoniker": "Pages\\ImportDetail.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\ImportDetail.razor",
-              "RelativeToolTip": "Pages\\ImportDetail.razor",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAABEAAAAwAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:36:33.133Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "Imports.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\Imports.razor",
-              "RelativeDocumentMoniker": "Pages\\Imports.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\Imports.razor",
-              "RelativeToolTip": "Pages\\Imports.razor",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAACUAAAAnAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:36:25.409Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Models.cs",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Models\\Models.cs",
-              "RelativeDocumentMoniker": "Models\\Models.cs",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Models\\Models.cs",
-              "RelativeToolTip": "Models\\Models.cs",
-              "ViewState": "AgIAAG4AAAAAAAAAAAAowIEAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-09-08T17:35:26.638Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
               "Title": "StudentDetail.razor",
               "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\StudentDetail.razor",
               "RelativeDocumentMoniker": "Pages\\StudentDetail.razor",
               "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Pages\\StudentDetail.razor",
               "RelativeToolTip": "Pages\\StudentDetail.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEYAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAEMAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:26:28.849Z",
+              "WhenOpened": "2025-09-09T23:19:34.405Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "StudentInfoCard.razor",
-              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\StudentInfoCard.razor",
-              "RelativeDocumentMoniker": "Components\\StudentInfoCard.razor",
-              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Components\\StudentInfoCard.razor",
-              "RelativeToolTip": "Components\\StudentInfoCard.razor",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGUAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000759|",
-              "WhenOpened": "2025-09-08T17:23:19.455Z",
+              "DocumentIndex": 2,
+              "Title": "ObservacoesApi.cs",
+              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ObservacoesApi.cs",
+              "RelativeDocumentMoniker": "Services\\ObservacoesApi.cs",
+              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\ObservacoesApi.cs",
+              "RelativeToolTip": "Services\\ObservacoesApi.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAqwAwAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T23:20:36.428Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "AlunosApi.cs",
+              "DocumentMoniker": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\AlunosApi.cs",
+              "RelativeDocumentMoniker": "Services\\AlunosApi.cs",
+              "ToolTip": "C:\\Users\\docto\\projetos\\javascript\\bi_edu\\frontend\\v1\\Importador\\Importador.Front\\Services\\AlunosApi.cs",
+              "RelativeToolTip": "Services\\AlunosApi.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-09-09T23:20:03.87Z",
               "EditorCaption": ""
             }
           ]

@@ -1,24 +1,176 @@
 @page "/students/{AlunoId:int}"
-@using Importador.Front.Components
+@using System.Text.Json
+@using Microsoft.AspNetCore.Components.Forms
+@using Importador.Front.Models
+@using Importador.Front.Services
+@inject IAlunosApi AlunosApi
+@inject IObservacoesApi ObsApi
 @inject NavigationManager Nav
+@inject ILogger<StudentDetail> Log
 
-@code {
+<h1 class="h1">Conselho do Aluno</h1>
+<p class="sub">Aluno @AlunoId — Import @ImportId</p>
+
+@if (_loading)
+{
+    <div class="card card-muted center" style="padding:22px;">
+        <span class="spinner"></span> Carregando…
+    </div>
+}
+else if (!string.IsNullOrWhiteSpace(_err))
+{
+    <div class="card card-muted center" style="padding:22px;">@_err</div>
+}
+else if (_aluno is null)
+{
+    <div class="card card-muted center" style="padding:22px;">Nenhum dado encontrado para este aluno.</div>
+}
+else
+{
+    <div class="grid grid-3 section">
+        <StudentInfoCard Aluno="_aluno" />
+
+        <div class="card">
+            <div class="card-title">Situação</div>
+            <div class="center" style="margin-top:24px">
+                <span class="badge badge-ok">@(_aluno.Situacao ?? "—")</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Áreas em Conselho</div>
+            <div class="center sub">Nenhuma</div>
+        </div>
+    </div>
+
+    <NotasHeatmap Resumo="_resumo" class="section" />
+
+    <ObservacoesList class="section"
+                     Items="_obs"
+                     ImportCsvRequested="ImportObsCsv"
+                     ExportBaseRequested="ExportObsBase" />
+}
+
+@code{
     [Parameter] public int AlunoId { get; set; }
-    Guid? _importId;
 
-    protected override void OnParametersSet()
+    // pega automaticamente ?importId=... da URL (mantém compatibilidade com atribuição manual)
+    [SupplyParameterFromQuery(Name = "importId")]
+    public Guid? ImportId { get; set; }
+
+    private bool _loading = true;
+    private string? _err;
+
+    private AlunoDetalhe? _aluno;
+    private List<BimestreResumoDto> _resumo = new();
+    private List<ObservacaoItem> _obs = new();
+
+    protected override async Task OnParametersSetAsync()
     {
-        var u = new Uri(Nav.Uri);
-        var qs = System.Web.HttpUtility.ParseQueryString(u.Query);
-        if (Guid.TryParse(qs.Get("importId"), out var imp)) _importId = imp;
+        _loading = true;
+        _err = null;
+
+        try
+        {
+            // === 1) Aluno ===
+            try
+            {
+                Log.LogInformation("StudentDetail: GetAlunoAsync AlunoId={AlunoId}, ImportId={ImportId}", AlunoId, ImportId);
+                _aluno = await AlunosApi.GetAlunoAsync(AlunoId, ImportId);
+            }
+            catch (JsonException ex)
+            {
+                _err = $"Falha ao carregar dados do aluno (JSON). {ex.Message}";
+                Log.LogError(ex, "GetAlunoAsync JSON");
+                return;
+            }
+            catch (HttpRequestException ex)
+            {
+                _err = $"Falha ao carregar dados do aluno (HTTP). {ex.Message}";
+                Log.LogError(ex, "GetAlunoAsync HTTP");
+                return;
+            }
+
+            // === 2) Resumo ===
+            try
+            {
+                Log.LogInformation("StudentDetail: GetResumoAsync AlunoId={AlunoId}, ImportId={ImportId}", AlunoId, ImportId);
+                _resumo = await AlunosApi.GetResumoAsync(AlunoId, ImportId) ?? new();
+            }
+            catch (JsonException ex)
+            {
+                _err = $"Falha ao carregar resumo (JSON). {ex.Message}";
+                Log.LogError(ex, "GetResumoAsync JSON");
+                return;
+            }
+            catch (HttpRequestException ex)
+            {
+                _err = $"Falha ao carregar resumo (HTTP). {ex.Message}";
+                Log.LogError(ex, "GetResumoAsync HTTP");
+                return;
+            }
+
+            // === 3) Observações ===
+            try
+            {
+                Log.LogInformation("StudentDetail: ObsApi.GetPageAsync AlunoId={AlunoId}, ImportId={ImportId}", AlunoId, ImportId);
+                var page = await ObsApi.GetPageAsync(AlunoId, ImportId, page: 1, pageSize: 50);
+                _obs = page?.Items ?? new();
+            }
+            catch (JsonException ex)
+            {
+                _err = $"Falha ao carregar observações (JSON). {ex.Message}";
+                Log.LogError(ex, "ObsApi.GetPageAsync JSON");
+                return;
+            }
+            catch (HttpRequestException ex)
+            {
+                _err = $"Falha ao carregar observações (HTTP). {ex.Message}";
+                Log.LogError(ex, "ObsApi.GetPageAsync HTTP");
+                return;
+            }
+        }
+        catch (Exception ex)
+        {
+            _err = $"Falha inesperada ao carregar dados. {ex.Message}";
+            Log.LogError(ex, "StudentDetail Geral");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    // CSV de observações
+    private async Task ImportObsCsv(IBrowserFile file)
+    {
+        try
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024);
+            var resp = await ObsApi.ImportCsvAsync(AlunoId, ImportId, stream, file.Name);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                _err = $"Erro ao importar CSV: {(int)resp.StatusCode} {resp.ReasonPhrase}";
+                Log.LogWarning("ImportCsvAsync => {Status} {Reason}", (int)resp.StatusCode, resp.ReasonPhrase);
+                return;
+            }
+
+            var page = await ObsApi.GetPageAsync(AlunoId, ImportId, 1, 50);
+            _obs = page?.Items ?? new();
+        }
+        catch (Exception ex)
+        {
+            _err = $"Erro ao importar CSV: {ex.Message}";
+            Log.LogError(ex, "ImportObsCsv exception");
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void ExportObsBase()
+    {
+        var url = $"/api/observacoes/export-base?alunoId={AlunoId}&importId={ImportId}";
+        Log.LogInformation("ExportObsBase -> {Url}", url);
+        Nav.NavigateTo(url, forceLoad: true);
     }
 }
-
-<h2 class="h1">Conselho do Aluno</h2>
-<p class="sub">Aluno @AlunoId @if (_importId is not null){
-<text>— Import @_importId</text>
-}
-</p>
-
-<!-- Apenas instancia o componente que já consome a API -->
-<StudentCouncil AlunoId="AlunoId" ImportId="_importId" />

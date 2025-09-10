@@ -26,7 +26,8 @@ public sealed class AlunosApi(HttpClient http, NavigationManager nav) : IAlunosA
         return await _http.GetFromJsonAsync<List<ObservacaoItem>>(url, ct) ?? [];
     }
 
-    public async Task<HttpResponseMessage> ImportObservacoesCsvAsync(int alunoId, Guid? importId, Stream csv, string fileName, CancellationToken ct = default)
+    public async Task<HttpResponseMessage> ImportObservacoesCsvAsync(
+        int alunoId, Guid? importId, Stream csv, string fileName, CancellationToken ct = default)
     {
         using var form = new MultipartFormDataContent();
         var file = new StreamContent(csv);
@@ -48,4 +49,8 @@ public sealed class AlunosApi(HttpClient http, NavigationManager nav) : IAlunosA
         _nav.NavigateTo(url, forceLoad: true);
         return Task.CompletedTask;
     }
+
+    public Task<List<BimestreResumoDto>> GetResumoAsync(int alunoId, Guid? importId, CancellationToken ct = default)
+      => _http.GetFromJsonAsync<List<BimestreResumoDto>>(
+          $"/api/alunos/{alunoId}/resumo?importId={importId}", ct)!;
 }

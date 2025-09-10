@@ -8,7 +8,12 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddBackendApi(this IServiceCollection services, Uri baseAddress)
     {
-        services.AddHttpClient("backend", c => c.BaseAddress = baseAddress);
+        services.AddHttpClient("backend", c =>
+        {
+            c.BaseAddress = baseAddress;
+            c.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+
+        });
 
         services.AddScoped<IImportsApi, ImportsApi>();
         services.AddScoped<IAlunosApi, AlunosApi>();

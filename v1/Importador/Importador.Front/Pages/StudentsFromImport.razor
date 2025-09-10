@@ -1,204 +1,182 @@
 @page "/imports/{Id:guid}/students"
-@using System.Net.Http.Headers
 @using Importador.Front.Models
-@inject HttpClient Http
+@using System.Net.Http.Headers
+@using Importador.Front.Services
+@inject IImportsApi Api
 @inject NavigationManager Nav
 
 <h2 class="h1">Alunos da Planilha</h2>
 <p class="sub">Import @Id</p>
 
-@if (!string.IsNullOrWhiteSpace(_toastMsg))
-{
-    <div class="toast @(_toastKind)" style="bottom:20px; right:20px; position:fixed">
-        @_toastMsg
-    </div>
-}
-
 <div class="list-card">
 
-    <!-- Cabeçalho -->
+    <!-- Cabeçalho do card -->
     <div class="list-header">
         <div class="title">
             <span class="material-symbols-outlined">group</span>
             <span>Lista de Alunos</span>
         </div>
 
-        <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <!-- Exportar CSV (Matrícula/Foto) -->
-            <button class="btn" title="Exportar CSV (Matrícula/Foto)" @onclick="ExportInfoCsv">
+        <div style="display:flex; gap:10px; align-items:center;">
+            <!-- Exportar CSV -->
+            <button class="btn" title="Exportar Matrícula/Foto" @onclick="ExportCsv">
                 <span class="material-symbols-outlined">download</span>
                 <span>Exportar Matrícula/Foto</span>
             </button>
 
-            <!-- Importar CSV (Matrícula/Foto) -> input escondido dentro do label -->
-            <label class="filebtn" title="Importar CSV (Matrícula/Foto)">
+            <!-- Importar CSV -->
+            <label class="filebtn" title="Importar Matrícula/Foto">
                 <span class="material-symbols-outlined">upload</span>
                 <span>Importar Matrícula/Foto</span>
-                <InputFile OnChange="OnCsvSelected" accept=".csv" />
+                <InputFile accept=".csv" OnChange="OnCsvSelected" />
             </label>
         </div>
     </div>
 
-    <!-- Toolbar -->
+    <!-- Toolbar (busca) -->
     <div class="list-toolbar">
         <input class="input" placeholder="Buscar por nome ou matrícula..."
-               @bind="_q" @bind:event="oninput" />
-        <!-- (Opcional) seletor de ordenação / filtros -->
-        <!-- <select class="input" style="max-width:220px"><option>Nome</option></select> -->
+        @bind="_q" @bind:event="oninput" />
     </div>
 
     <!-- Tabela -->
-    <div style="overflow:auto">
-        <table class="tbl">
-            <thead>
+    <table class="tbl">
+        <thead>
+            <tr>
+                <th class="col-n">#</th>
+                <th>Nome</th>
+                <th class="col-md">Matrícula</th>
+                <th class="col-sm td-center">Ações</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!string.IsNullOrWhiteSpace(_err))
+            {
                 <tr>
-                    <th class="col-n">#</th>
-                    <th>Nome</th>
-                    <th class="col-md">Matrícula</th>
-                    <th class="col-sm td-center">Ações</th>
+                    <td colspan="4" class="sub" style="padding:18px;">
+                        @(_err)
+                    </td>
                 </tr>
-            </thead>
-
-            <tbody>
-                @if (_view is null)
+            }
+            else if (_view is null)
+            {
+                <tr>
+                    <td colspan="4" class="sub" style="padding:18px;">Carregando…</td>
+                </tr>
+            }
+            else if (_view.Count == 0)
+            {
+                <tr>
+                    <td colspan="4" class="sub" style="padding:18px;">Nenhum aluno encontrado.</td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var (aluno, idx) in _view.Select((a, i) => (a, i + 1)))
                 {
                     <tr>
-                        <td colspan="4" class="sub" style="padding:18px">Carregando…</td>
+                        <td class="col-n">@idx</td>
+                        <td>@aluno.Nome</td>
+                        <td class="col-md">@aluno.Matricula</td>
+                        <td class="td-center col-sm">
+                            <button class="btn btn-ghost" title="Ver"
+                            @onclick="() => GoToAluno(aluno.Id)">
+                                <span class="material-symbols-outlined">visibility</span>
+                                <span>Ver</span>
+                            </button>
+                        </td>
                     </tr>
                 }
-                else if (_view.Count == 0)
-                {
-                    <tr>
-                        <td colspan="4" class="sub" style="padding:18px">Nenhum aluno encontrado.</td>
-                    </tr>
-                }
-                else
-                {
-                    @foreach (var (aluno, idx) in _view.Select((a, i) => (a, i + 1)))
-                    {
-                        <tr>
-                            <td class="col-n">@idx</td>
-                            <td>@aluno.Nome</td>
-                            <td class="col-md">@aluno.Matricula</td>
-                            <td class="col-sm td-center">
-                                <NavLink class="btn" href=@($"/students/{aluno.Id}?importId={Id}")>
-                                    <span class="material-symbols-outlined">visibility</span>
-                                    <span>Ver</span>
-                                </NavLink>
-                            </td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
+            }
+        </tbody>
+    </table>
 
-    <!-- Rodapé (página/resumo – estático por enquanto) -->
+    <!-- Rodapé -->
     <div class="list-footer">
-        <span>Mostrando @_view.Count de @_all.Count alunos</span>
-        <div style="display:flex; gap:8px">
-            <button class="btn btn-ghost" disabled>Anterior</button>
-            <span class="sub">Página 1 de 1</span>
-            <button class="btn btn-ghost" disabled>Próximo</button>
-        </div>
+        <div>@($"{_view?.Count ?? 0} aluno(s) exibido(s)")</div>
+        <div>Filtro: @_q</div>
     </div>
 </div>
 
 @code {
     [Parameter] public Guid Id { get; set; }
 
-    // dados
-    List<AlunoListItem> _all = new();
-    List<AlunoListItem> _view = new();
+    List<AlunoListItem>? _all;
+    List<AlunoListItem>? _view;
     string? _q;
+    string? _err;
 
-    // toast
-    string? _toastMsg;
-    string _toastKind = "ok";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         await LoadAsync();
+        ApplyFilter();
     }
 
     async Task LoadAsync()
     {
+        _err = null;
+        _all = _view = null;
+
         try
         {
-            _all = await Http.GetFromJsonAsync<List<AlunoListItem>>($"/api/imports/{Id}/alunos") ?? new();
-            ApplyFilter();
+            _all = await Api.GetAlunosFromImportAsync(Id) ?? new();
+            _view = _all;
         }
         catch (Exception ex)
         {
-            ShowErr($"Erro ao carregar alunos: {ex.Message}");
+            // O service já tenta identificar quando vem HTML; exibimos “limpo” aqui
+            _err = $"Erro ao carregar alunos: {ex.Message}";
+            _all = _view = new();
         }
+        StateHasChanged();
     }
 
     void ApplyFilter()
     {
         var q = _q?.Trim().ToUpperInvariant();
-        _view = string.IsNullOrEmpty(q)
-            ? _all
-            : _all.Where(x =>
-                (x.Nome?.ToUpperInvariant().Contains(q) ?? false) ||
-                (x.Matricula?.ToUpperInvariant().Contains(q) ?? false))
-              .ToList();
+        if (string.IsNullOrEmpty(q)) { _view = _all ?? new(); return; }
+
+        _view = (_all ?? new()).Where(x =>
+            (x.Nome?.ToUpperInvariant().Contains(q) ?? false) ||
+            (x.Matricula?.ToUpperInvariant().Contains(q) ?? false)
+        ).ToList();
     }
 
-    protected override void OnParametersSet()
-        => ApplyFilter();
+    // Exportar CSV (Matrícula/Foto)
+    void ExportCsv()
+        => Nav.NavigateTo($"/api/imports/{Id}/alunos/export-info", forceLoad: true);
 
-    /* ========== Exportar CSV (Matrícula/Foto) ========== */
-    void ExportInfoCsv()
-        => Nav.NavigateTo($"/api/imports/{Id}/alunos/info/export", forceLoad: true);
+    // Abrir detalhes do aluno
+    void GoToAluno(int alunoId)
+        => Nav.NavigateTo($"/students/{alunoId}?importId={Id}");
 
-    /* ========== Importar CSV (Matrícula/Foto) ========== */
+    // Importar CSV (Matrícula/Foto)
     async Task OnCsvSelected(InputFileChangeEventArgs e)
     {
         var file = e.File;
-        if (file is null) { ShowErr("Selecione um arquivo .csv."); return; }
+        if (file is null) return;
 
         try
         {
-            using var content = new MultipartFormDataContent();
-            using var stream = file.OpenReadStream(20 * 1024 * 1024); // 20MB
-            using var fileContent = new StreamContent(stream);
-            fileContent.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
-            content.Add(fileContent, "file", file.Name);
+            using var stream = file.OpenReadStream(maxAllowedSize: 20 * 1024 * 1024);
+            (bool ok, string? msg) = await Api.ImportInfoCsvAsync(Id, stream, file.Name);
 
-            var resp = await Http.PostAsync($"/api/imports/{Id}/alunos/info/import", content);
-            var txt = await resp.Content.ReadAsStringAsync();
-
-            if (resp.IsSuccessStatusCode)
+            if (!ok)
             {
-                var updated = TryGetJsonValue(txt, "updated") ?? "0";
-                ShowOk($"Importação concluída. Registros atualizados: {updated}.");
-                await LoadAsync();
+                _err = $"Falha ao importar CSV: {msg}";
             }
             else
             {
-                var detail = TryGetJsonValue(txt, "detail") ?? TryGetJsonValue(txt, "message") ?? resp.ReasonPhrase;
-                ShowErr($"Falha ao importar: {(int)resp.StatusCode} {detail}");
+                _err = null;
+                await LoadAsync();   // recarrega a lista (pode ter atualizado matrículas/fotos)
             }
         }
         catch (Exception ex)
         {
-            ShowErr($"Erro ao importar CSV: {ex.Message}");
+            _err = $"Erro ao importar CSV: {ex.Message}";
         }
+        StateHasChanged();
     }
-
-    static string? TryGetJsonValue(string? json, string key)
-    {
-        if (string.IsNullOrWhiteSpace(json)) return null;
-        try
-        {
-            using var doc = System.Text.Json.JsonDocument.Parse(json);
-            return doc.RootElement.TryGetProperty(key, out var p) ? p.ToString() : null;
-        }
-        catch { return null; }
-    }
-
-    void ShowOk(string m) { _toastKind = "ok"; _toastMsg = m; StateHasChanged(); _ = HideToastSoon(); }
-    void ShowErr(string m) { _toastKind = "err"; _toastMsg = m; StateHasChanged(); _ = HideToastSoon(); }
-    async Task HideToastSoon() { await Task.Delay(3200); _toastMsg = null; StateHasChanged(); }
 }

@@ -3,27 +3,22 @@
 @inject IAlunosApi Api
 @inject NavigationManager Nav
 
-@* Parâmetros: este componente recebe o AlunoId (e ImportId via query ou param) *@
 @code {
     [Parameter] public int AlunoId { get; set; }
     [Parameter] public Guid? ImportId { get; set; }
 
-    // estado
     bool _loading = true;
     AlunoDetalhe? _aluno;
     List<ObservacaoItem> _obs = new();
 
-    // UI
     string? _toastMsg; string _toastKind = "ok";
 
-    // derivados
     HashSet<string> _disciplinas = new(StringComparer.OrdinalIgnoreCase);
     List<string> _areasConselho = new();
     List<(string Bim, Dictionary<string, decimal?> Notas)> _heatmapRows = new();
 
     protected override async Task OnParametersSetAsync()
     {
-        // lê ?importId= da URL se não foi passado via param
         if (ImportId is null)
         {
             var u = new Uri(Nav.Uri);
@@ -37,33 +32,25 @@
             _aluno = await Api.GetAlunoAsync(AlunoId, ImportId);
             _obs = await Api.GetObservacoesAsync(AlunoId, ImportId);
 
-            if (_aluno != null)
-                BuildDerived();
+            if (_aluno != null) BuildDerived();
         }
-        catch (Exception ex)
-        {
-            ShowErr($"Falha ao carregar dados: {ex.Message}");
-        }
+        catch (Exception ex) { ShowErr($"Falha ao carregar dados: {ex.Message}"); }
         finally { _loading = false; }
     }
 
-    // -------- Derivações -----------
     void BuildDerived()
     {
-        // garante coleção
-        _aluno!.Fatos ??= new List<AlunoFato>();
+        _aluno!.Fatos ??= new();
 
         _disciplinas = new HashSet<string>(
         _aluno.Fatos.Select(f => DiscSigla(f.Disciplina)).Where(s => !string.IsNullOrWhiteSpace(s)),
         StringComparer.OrdinalIgnoreCase);
 
-        // ordenação desejada por área
         var order = _areaOrder.SelectMany(p => p.Value).ToList();
         _disciplinas = new HashSet<string>(order.Where(_disciplinas.Contains), StringComparer.OrdinalIgnoreCase);
 
         _heatmapRows.Clear();
-        foreach (var b in new[] { 1, 2, 3, 4 })
-            _heatmapRows.Add((Bim: $"{b}º", Notas: NotasPorBim(b)));
+        foreach (var b in new[] { 1, 2, 3, 4 }) _heatmapRows.Add((Bim: $"{b}º", Notas: NotasPorBim(b)));
         _heatmapRows.Add((Bim: "Ano", Notas: MediaAno()));
 
         _areasConselho = _aluno.Fatos
@@ -101,16 +88,12 @@
     }
 
     int CountDisciplinas(int? bim = null)
-    => FatosNoBimestre(bim).Select(f => DiscSigla(f.Disciplina))
-    .Where(s => !string.IsNullOrWhiteSpace(s))
-    .Distinct(StringComparer.OrdinalIgnoreCase)
-    .Count();
+    => FatosNoBimestre(bim).Select(f => DiscSigla(f.Disciplina)).Where(s => !string.IsNullOrWhiteSpace(s))
+    .Distinct(StringComparer.OrdinalIgnoreCase).Count();
 
     int CountAreas(int? bim = null)
-    => FatosNoBimestre(bim).Select(f => AreaDe(DiscSigla(f.Disciplina)))
-    .Where(a => !string.IsNullOrWhiteSpace(a))
-    .Distinct(StringComparer.OrdinalIgnoreCase)
-    .Count();
+    => FatosNoBimestre(bim).Select(f => AreaDe(DiscSigla(f.Disciplina))).Where(a => !string.IsNullOrWhiteSpace(a))
+    .Distinct(StringComparer.OrdinalIgnoreCase).Count();
 
     IEnumerable<AlunoFato> FatosNoBimestre(int? bim)
     => bim is null ? _aluno!.Fatos : _aluno!.Fatos.Where(f => f.PeriodoAvaliativoId == bim);
@@ -150,15 +133,11 @@
         ["D. Técnicas"] = new[] { "DWS1", "GBD1", "SIOP", "IIHD", "MAAC" }
     };
 
-    static string AreaDe(string sigla)
-    => _discArea.TryGetValue(sigla, out var a) ? a : "Outras";
+    static string AreaDe(string sigla) => _discArea.TryGetValue(sigla, out var a) ? a : "Outras";
 
-    // Observações CSV
     async Task OnObsCsvSelected(InputFileChangeEventArgs e)
     {
-        var file = e.File;
-        if (file is null) return;
-
+        var file = e.File; if (file is null) return;
         try
         {
             using var s = file.OpenReadStream(20 * 1024 * 1024);
@@ -168,27 +147,19 @@
                 ShowOk("Observações importadas com sucesso.");
                 _obs = await Api.GetObservacoesAsync(AlunoId, ImportId);
             }
-            else
-            {
-                ShowErr($"Falha ao importar CSV: {(int)resp.StatusCode} {resp.ReasonPhrase}");
-            }
+            else ShowErr($"Falha ao importar CSV: {(int)resp.StatusCode} {resp.ReasonPhrase}");
         }
-        catch (Exception ex)
-        {
-            ShowErr($"Erro ao importar CSV: {ex.Message}");
-        }
+        catch (Exception ex) { ShowErr($"Erro ao importar CSV: {ex.Message}"); }
     }
 
     Task ExportObsBase() => Api.ExportObservacoesBaseCsvAsync(AlunoId, ImportId);
 
-    // UI helpers
     string SitCss(string? s)
     => string.Equals(s, "APR", StringComparison.OrdinalIgnoreCase) ? "badge badge-ok" :
     string.Equals(s, "REP", StringComparison.OrdinalIgnoreCase) ? "badge badge-err" :
     "badge badge-info";
 
     static string Fmt(decimal? n) => n.HasValue ? n.Value.ToString("0.#") : "-";
-
     static string NotaCss(decimal? n)
     {
         if (!n.HasValue) return "background:#111";
@@ -220,7 +191,6 @@ else if (_aluno is null)
 else
 {
     <div class="grid" style="grid-template-columns:280px 1fr 320px; gap:20px;">
-        <!-- Coluna 1: Identificação -->
         <div class="card" style="padding:16px">
             <div
                 style="aspect-ratio:1/1;border-radius:12px;overflow:hidden;background:#0f1316;display:flex;align-items:center;justify-content:center">
@@ -232,7 +202,6 @@ else
             </div>
         </div>
 
-        <!-- Coluna 2: Resumo -->
         <div class="card" style="padding:0">
             <table class="table" style="margin:0;border-radius:var(--radius);overflow:hidden">
                 <thead>
@@ -271,7 +240,6 @@ else
             </table>
         </div>
 
-        <!-- Coluna 3: Situação / Áreas em Conselho -->
         <div class="grid" style="grid-template-rows:auto auto; gap:20px">
             <div class="card">
                 <div class="card-title">Situação</div>
@@ -301,7 +269,6 @@ else
         </div>
     </div>
 
-    <!-- Heatmap -->
     <div class="card" style="margin-top:20px">
         <div class="card-title">Detalhamento de Notas por Área</div>
         @if (_disciplinas.Count == 0)
@@ -341,7 +308,6 @@ else
         }
     </div>
 
-    <!-- Observações (CSV) -->
     <div class="card" style="margin-top:20px">
         <div style="display:flex;justify-content:space-between;align-items:center">
             <div class="card-title with-icon">

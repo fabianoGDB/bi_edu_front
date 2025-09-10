@@ -1,42 +1,43 @@
 ﻿@using Importador.Front.Models
-@code {
-    [Parameter] public NotasGrid Grid { get; set; } = new();
-}
 
-<div class="card" style="padding:0;">
-    <div class="card-title" style="padding:16px">Detalhamento de Notas por Área</div>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Aluno</th>
-                <th style="width:60px">Bim</th>
-                @foreach (var a in Grid.Areas)
-                {
-                    <th>@a</th>
-                }
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var linha in Grid.Linhas)
-            {
+@if (Resumo is null || Resumo.Count == 0)
+{
+    <div class="card card-muted center">Sem notas para exibir.</div>
+}
+else
+{
+    var bimestres = Resumo.Select(r => r.Bimestre).Distinct().OrderBy(x => x).ToList();
+    var areas = Resumo.Select(r => r.Area).Distinct().OrderBy(x => x).ToList();
+
+    <div class="card">
+        <div class="card-title">Detalhamento de Notas por Área</div>
+        <table class="tbl">
+            <thead>
                 <tr>
-                    <td>MARIA JOAQUINA</td>  @* rótulo do aluno opcional *@
-                    <td>@linha.Rotulo</td>
-                    @foreach (var v in linha.Valores)
+                    <th class="col-sm">Bim</th>
+                    @foreach (var a in areas)
                     {
-                        <td>
-                            @if (v.HasValue)
-                            {
-                                @v.Value.ToString("0.#")
-                            }
-                            else
-                            {
-                                <span>-</span>
-                            }
-                        </td>
+                        <th class="td-center">@a</th>
                     }
                 </tr>
-            }
-        </tbody>
-    </table>
-</div>
+            </thead>
+            <tbody>
+                @foreach (var b in bimestres)
+                {
+                    <tr>
+                        <td class="td-center">Bim. @b</td>
+                        @foreach (var a in areas)
+                        {
+                            var v = Resumo.FirstOrDefault(x => x.Bimestre == b && x.Area == a)?.Media;
+                            <td class="td-center">@((v.HasValue ? v.Value.ToString("0.0") : "-"))</td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    [Parameter] public List<BimestreResumoDto> Resumo { get; set; } = new();
+}

@@ -21,23 +21,21 @@ public sealed class ImportsApi : IImportsApi
         stream.Headers.ContentType = new MediaTypeHeaderValue(
             "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         content.Add(stream, "file", fileName);
-
-        // POST /api/imports
-        return _http.PostAsync("/api/imports", content, ct); // 202 Accepted esperado. :contentReference[oaicite:1]{index=1}
+        return _http.PostAsync("/api/imports", content, ct);
     }
 
     public Task<HttpResponseMessage> ProcessAsync(Guid importId, CancellationToken ct = default)
-        => _http.PostAsync($"/api/imports/{importId}/process", null, ct); // 202. :contentReference[oaicite:2]{index=2}
+        => _http.PostAsync($"/api/imports/{importId}/process", null, ct);
 
     public Task<ImportStatus?> GetStatusAsync(Guid importId, CancellationToken ct = default)
-        => _http.GetFromJsonAsync<ImportStatus>($"/api/imports/{importId}/status", Json, ct); // 200. :contentReference[oaicite:3]{index=3}
+        => _http.GetFromJsonAsync<ImportStatus>($"/api/imports/{importId}/status", Json, ct);
 
     public Task<List<AlunoListItem>?> GetAlunosFromImportAsync(Guid importId, CancellationToken ct = default)
-        => _http.GetFromJsonAsync<List<AlunoListItem>>($"/api/imports/{importId}/alunos", Json, ct); // 200. :contentReference[oaicite:4]{index=4}
+        => _http.GetFromJsonAsync<List<AlunoListItem>>($"/api/imports/{importId}/alunos", Json, ct);
 
     // CSV matrícula/foto (export)
     public Task<HttpResponseMessage> ExportInfoCsvAsync(Guid importId, CancellationToken ct = default)
-        => _http.GetAsync($"/api/imports/{importId}/alunos/export-info", ct); // content-type: text/csv. :contentReference[oaicite:5]{index=5}
+        => _http.GetAsync($"/api/imports/{importId}/alunos/export-info", ct);
 
     // CSV matrícula/foto (import)
     public async Task<(bool ok, string? message)> ImportInfoCsvAsync(Guid importId, Stream csv, string fileName, CancellationToken ct = default)
@@ -47,13 +45,11 @@ public sealed class ImportsApi : IImportsApi
         file.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
         content.Add(file, "file", fileName);
 
-        // POST /api/imports/{id}/alunos/import-info
-        var resp = await _http.PostAsync($"/api/imports/{importId}/alunos/import-info", content, ct); // :contentReference[oaicite:6]{index=6}
+        var resp = await _http.PostAsync($"/api/imports/{importId}/alunos/import-info", content, ct);
         var txt = await resp.Content.ReadAsStringAsync(ct);
 
         if (resp.IsSuccessStatusCode) return (true, txt);
 
-        // tenta ProblemDetails/message
         try
         {
             using var doc = JsonDocument.Parse(txt);
@@ -65,17 +61,13 @@ public sealed class ImportsApi : IImportsApi
         return (false, $"{(int)resp.StatusCode} {resp.ReasonPhrase}");
     }
 
-
+    // ======== ALIASES (TELAS LEGADO) ========
     public async Task<List<ImportListItem>> GetImportsAsync(CancellationToken ct = default)
     {
-        // endpoint padrao da lista
-        var list = await _http.GetFromJsonAsync<List<ImportListItem>>("/api/imports", Json, ct);
+        var list = await _http.GetFromJsonAsync<List<ImportListItem>>("/api/imports", ct);
         return list ?? new();
     }
 
     public Task<ImportStatus?> GetImportStatusAsync(Guid importId, CancellationToken ct = default)
-    {
-        // reaproveita o método já existente
-        return GetStatusAsync(importId, ct);
-    }
+        => GetStatusAsync(importId, ct);
 }

@@ -1,39 +1,50 @@
-﻿// Services/ObservacoesApi.cs
+﻿using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using Importador.Front.Models;
-using static Importador.Front.Services.ServiceCollectionExtensions;
+using Microsoft.AspNetCore.Components;
 
 namespace Importador.Front.Services;
 
-public sealed class ObservacoesApi : IObservacoesApi
+public sealed class ObservacoesApi(HttpClient http, NavigationManager nav) : IObservacoesApi
 {
-    private readonly HttpClient _http;
-    public ObservacoesApi(IHttpClientFactory f) => _http = f.CreateClient("backend");
+    private readonly HttpClient _http = http;
+    private readonly NavigationManager _nav = nav;
 
-    // GET /api/alunos/{alunoId}/observacoes?importId=&page=&pageSize=&startUtc=&endUtc=  :contentReference[oaicite:8]{index=8}
-    public Task<ObservacaoPage?> ListarAsync(
-        int alunoId, Guid? importId = null, int page = 1, int pageSize = 50,
-        DateTimeOffset? startUtc = null, DateTimeOffset? endUtc = null,
-        CancellationToken ct = default)
+    public async Task<ObservacaoPage> GetPageAsync(int alunoId, Guid? importId, int page = 1, int pageSize = 50, CancellationToken ct = default)
     {
-        var qp = new List<string> { $"page={page}", $"pageSize={pageSize}" };
-        if (importId is not null) qp.Add($"importId={importId}");
-        if (startUtc is not null) qp.Add($"startUtc={Uri.EscapeDataString(startUtc.Value.UtcDateTime.ToString("o"))}");
-        if (endUtc is not null) qp.Add($"endUtc={Uri.EscapeDataString(endUtc.Value.UtcDateTime.ToString("o"))}");
-
-        var url = $"/api/alunos/{alunoId}/observacoes" + (qp.Count > 0 ? "?" + string.Join("&", qp) : "");
-        return _http.GetFromJsonAsync<ObservacaoPage>(url, Json, ct);
+        var qs = importId is null ? $"?page={page}&pageSize={pageSize}" : $"?importId={importId}&page={page}&pageSize={pageSize}";
+        return await _http.GetFromJsonAsync<ObservacaoPage>($"/api/alunos/{alunoId}/conselho/observacoes{qs}", ct)
+               ?? new ObservacaoPage { Items = new(), Total = 0, Page = page, PageSize = pageSize };
     }
 
-    // POST /api/alunos/{alunoId}/observacoes  body: { texto, importId? }  :contentReference[oaicite:9]{index=9}
-    public async Task<ObservacaoItem?> CriarAsync(int alunoId, ObservacaoCreate req, CancellationToken ct = default)
+    public Task<HttpResponseMessage> CreateAsync(int alunoId, Guid? importId, ObservacaoCreate dto, CancellationToken ct = default)
     {
-        var resp = await _http.PostAsJsonAsync($"/api/alunos/{alunoId}/observacoes", req, Json, ct);
-        if (!resp.IsSuccessStatusCode) return null;
-        return await resp.Content.ReadFromJsonAsync<ObservacaoItem>(Json, ct);
+        var url = importId is null
+            ? $"/api/alunos/{alunoId}/conselho/observacoes"
+            : $"/api/alunos/{alunoId}/conselho/observacoes?importId={importId}";
+        return _http.PostAsJsonAsync(url, dto, ct);
     }
 
-    // GET /api/alunos/{alunoId}/observacoes/{obsId}  :contentReference[oaicite:10]{index=10}
-    public Task<ObservacaoItem?> ObterAsync(int alunoId, int obsId, CancellationToken ct = default)
-        => _http.GetFromJsonAsync<ObservacaoItem>($"/api/alunos/{alunoId}/observacoes/{obsId}", Json, ct);
+    public async Task<HttpResponseMessage> ImportCsvAsync(int alunoId, Guid? importId, Stream csv, string fileName, CancellationToken ct = default)
+    {
+        using var form = new MultipartFormDataContent();
+        var file = new StreamContent(csv);
+        file.Headers.ContentType = new MediaTypeHeaderValue("text/csv");
+        form.Add(file, "file", fileName);
+
+        var url = importId is null
+            ? $"/api/alunos/{alunoId}/conselho/observacoes/import"
+            : $"/api/alunos/{alunoId}/conselho/observacoes/import?importId={importId}";
+
+        return await _http.PostAsync(url, form, ct);
+    }
+
+    public Task ExportBaseCsvAsync(int alunoId, Guid? importId, CancellationToken ct = default)
+    {
+        var url = importId is null
+            ? $"/api/alunos/{alunoId}/conselho/observacoes/base"
+            : $"/api/alunos/{alunoId}/conselho/observacoes/base?importId={importId}";
+        _nav.NavigateTo(url, forceLoad: true);
+        return Task.CompletedTask;
+    }
 }
