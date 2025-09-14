@@ -18,6 +18,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IImportsApi, ImportsApi>();
         services.AddScoped<IAlunosApi, AlunosApi>();
         services.AddScoped<IObservacoesApi, ObservacoesApi>();
+        services.AddScoped<IAreasApi, AreasApi>();
+        services.AddScoped<IDisciplinasApi, DisciplinasApi>();
 
         return services;
     }

@@ -44,6 +44,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTdHVkZW50SW5mb0NhcmQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Pages/Disciplinas.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGlzY2lwbGluYXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/docto/projetos/javascript/bi_edu/frontend/v1/Importador/Importador.Front/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

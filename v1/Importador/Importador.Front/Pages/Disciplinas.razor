@@ -1,0 +1,403 @@
+﻿@page "/disciplinas"
+@using Importador.Front.Models
+@using Importador.Front.Services
+@inject IAreasApi AreasApi
+@inject IDisciplinasApi DisciplinasApi
+@inject IJSRuntime JS
+
+<h1 class="page-title">Áreas e Disciplinas</h1>
+<p class="muted" style="margin-top:-8px;">Gerencie as áreas de conhecimento e suas disciplinas</p>
+
+<div class="grid" style="grid-template-columns: 1fr 1fr; gap:20px; align-items:start;">
+
+    @* ===================== ÁREAS ===================== *@
+    <div class="card">
+        <div class="list-header">
+            <div class="title">
+                <span class="material-symbols-outlined">legend_toggle</span>
+                Áreas de Conhecimento
+            </div>
+            <div class="card-actions">
+                <button class="btn" @onclick="LoadAreas" title="Atualizar">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button class="btn btn-primary" @onclick="ShowAreaCreate">
+                    <span class="material-symbols-outlined">add</span> Nova Área
+                </button>
+            </div>
+        </div>
+
+        @if (loadingAreas)
+        {
+            <div class="empty">Carregando...</div>
+        }
+        else if (!areasOk)
+        {
+            @* erro → card permanece, porém vazio *@
+            <div class="empty muted">—</div>
+        }
+        else if (areas.Count == 0)
+        {
+            <div class="empty">Nenhuma área cadastrada.</div>
+        }
+        else
+        {
+            <div style="max-height:560px; overflow:auto; padding-right:6px;">
+                @foreach (var a in areas
+               .OrderBy(x => x.Ordem == 0 ? int.MaxValue : x.Ordem) // 0 vai para o fim
+               .ThenBy(x => x.Nome))
+                {
+                    var related = allDiscs.Where(d => d.AreaId == a.Id)
+                    .OrderBy(d => d.Nome)
+                    .ToList();
+
+                    <div class="list-item">
+                        <div style="display:flex; align-items:flex-start; gap:12px;">cd 
+                            <div style="width:10px; height:10px; border-radius:2px; margin-top:6px;
+                        background:@(string.IsNullOrWhiteSpace(a.CorHex) ? "#374151" : a.CorHex)">
+                            </div>
+                            <div>
+                                <div style="font-weight:700;">@a.Nome</div>
+                                <div class="muted" style="margin-top:4px;">@related.Count disciplina(s)</div>
+
+                                @if (related.Count > 0)
+                                {
+                                    <div style="margin-top:6px; display:flex; gap:6px; flex-wrap:wrap;">
+                                        @foreach (var d in related.Take(6))
+                                        {
+                                            <span class="badge"
+                                                  style="background:@(string.IsNullOrWhiteSpace(a.CorHex) ? "#334155" : a.CorHex)">
+                                                @d.Nome
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row-actions">
+                            <button class="icon-btn" title="Editar" @onclick="() => ShowAreaEdit(a.Id)">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="icon-btn" title="Excluir" @onclick="() => RemoveArea(a.Id)">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        }
+    </div>
+
+    @* ===================== DISCIPLINAS ===================== *@
+    <div class="card">
+        <div class="list-header">
+            <div class="title">
+                <span class="material-symbols-outlined">menu_book</span>
+                Disciplinas
+            </div>
+            <div class="card-actions">
+                <input class="input" style="width:260px" placeholder="Buscar por nome ou sigla..."
+                       @bind="q" @bind:after="OnQueryChanged" />
+                <select class="select" style="width:220px" @bind="areaId" disabled="@(!areasOk)">
+                    <option value="">Todas as áreas</option>
+                    @foreach (var a in areas)
+                    {
+                        <option value="@a.Id">@a.Nome</option>
+                    }
+                </select>
+                <button class="btn" @onclick="LoadDisciplinas" title="Atualizar">
+                    <span class="material-symbols-outlined">refresh</span>
+                </button>
+                <button class="btn btn-primary" @onclick="ShowDiscCreate" disabled="@(!areasOk)">
+                    <span class="material-symbols-outlined">add</span> Nova Disciplina
+                </button>
+            </div>
+        </div>
+
+        @if (loadingDisc)
+        {
+            <div class="empty">Carregando...</div>
+        }
+        else if (!discOk)
+        {
+            @* erro → card permanece, porém vazio *@
+            <div class="empty muted">—</div>
+        }
+        else if (discPage is null || discPage.Items.Count == 0)
+        {
+            <div class="empty">Nenhuma disciplina encontrada.</div>
+        }
+        else
+        {
+            <div style="max-height:560px; overflow:auto; padding-right:6px;">
+                @foreach (var d in discPage.Items)
+                {
+                    <div class="list-item">
+                        <div>
+                            <div style="font-weight:700;">@d.Nome</div>
+                            <div class="muted" style="margin-top:4px;">
+                                @if (!string.IsNullOrWhiteSpace(d.AreaNome))
+                                {
+                                    <span>@d.AreaNome</span>
+                                }
+                                else
+                                {
+                                    <span>Sem área</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row-actions">
+                            <button class="icon-btn" title="Editar" @onclick="() => ShowDiscEdit(d.Id)">
+                                <span class="material-symbols-outlined">edit</span>
+                            </button>
+                            <button class="icon-btn" title="Excluir" @onclick="() => RemoveDisc(d.Id)">
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="pager">
+                <button class="btn" disabled="@(!CanPrev)" @onclick="Prev">Anterior</button>
+                <span>Página @discPage.Page de @TotalPages</span>
+                <button class="btn" disabled="@(!CanNext)" @onclick="Next">Próximo</button>
+            </div>
+        }
+    </div>
+</div>
+
+@* ===================== MODAIS ===================== *@
+@if (showAreaForm)
+{
+    <div class="modal-backdrop" @onclick="HideAreaForm"></div>
+    <div class="modal" style="max-width:520px;">
+        <div class="card">
+            <div class="list-header">
+                <div class="title">
+                    <span class="material-symbols-outlined">edit_square</span>
+                    @(areaEditId is null ? "Nova Área" : $"Editar Área #{areaEditId}")
+                </div>
+                <div class="card-actions">
+                    <button class="btn" @onclick="HideAreaForm"><span class="material-symbols-outlined">close</span> Fechar</button>
+                </div>
+            </div>
+
+            <div class="grid" style="grid-template-columns:1fr;">
+                <label>Nome</label>
+                <input class="input" @bind="areaEdit.Nome" />
+                <label>Cor (hex)</label>
+                <input class="input" @bind="areaEdit.CorHex" placeholder="#0ea5a5" />
+                <label>Ordem (opcional)</label>
+                <input class="input" type="number" @bind="areaEdit.Ordem" />
+                <label><input type="checkbox" @bind="areaEdit.Ativo" /> Ativa</label>
+            </div>
+
+            <div class="card-actions">
+                <button class="btn btn-primary" @onclick="SaveArea"><span class="material-symbols-outlined">save</span> Salvar</button>
+                <button class="btn" @onclick="HideAreaForm"><span class="material-symbols-outlined">close</span> Cancelar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showDiscForm)
+{
+    <div class="modal-backdrop" @onclick="HideDiscForm"></div>
+    <div class="modal" style="max-width:520px;">
+        <div class="card">
+            <div class="list-header">
+                <div class="title">
+                    <span class="material-symbols-outlined">edit_square</span>
+                    @(discEditId is null ? "Nova Disciplina" : $"Editar Disciplina #{discEditId}")
+                </div>
+                <div class="card-actions">
+                    <button class="btn" @onclick="HideDiscForm"><span class="material-symbols-outlined">close</span> Fechar</button>
+                </div>
+            </div>
+
+            <div class="grid" style="grid-template-columns:1fr;">
+                <label>Nome</label>
+                <input class="input" @bind="discEdit.Nome" />
+                <label>Sigla</label>
+                <input class="input" @bind="discEdit.Sigla" />
+                <label>Área</label>
+                <select class="select" @bind="discEdit.AreaId" disabled="@(!areasOk)">
+                    <option value="0">Sem área</option>
+                    @foreach (var a in areas)
+                    {
+                        <option value="@a.Id">@a.Nome</option>
+                    }
+                </select>
+                <label>Carga Horária (rótulo)</label>
+                <input class="input" @bind="discEdit.CargaHorariaRotulo" placeholder="Ex.: 2h/semana" />
+            </div>
+
+            <div class="card-actions">
+                <button class="btn btn-primary" @onclick="SaveDisc"><span class="material-symbols-outlined">save</span> Salvar</button>
+                <button class="btn" @onclick="HideDiscForm"><span class="material-symbols-outlined">close</span> Cancelar</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // ===== dados
+    List<AreaListItem> areas = new();
+    List<DisciplinaListItem> allDiscs = new();        // usado para mostrar chips dentro de Áreas
+    DisciplinaListPage? discPage;
+
+    // ===== estados de carregamento/erro (independentes)
+    bool loadingAreas, areasOk;
+    bool loadingDisc, discOk;
+
+    // ===== filtros/paginação disciplinas
+    string? q;
+    int? areaId;
+    int current = 1, pageSize = 20;
+
+    // ===== modal de ÁREA
+    bool showAreaForm;
+    int? areaEditId;
+    AreaUpsert areaEdit = new() { Ativo = true };
+
+    // ===== modal de DISCIPLINA
+    bool showDiscForm;
+    int? discEditId;
+    DisciplinaUpsert discEdit = new();
+
+    bool CanPrev => discPage is not null && current > 1;
+    bool CanNext => discPage is not null && current < TotalPages;
+    int TotalPages => discPage is null ? 1 : (int)Math.Ceiling((double)discPage.Total / discPage.PageSize);
+
+    protected override async Task OnInitializedAsync()
+    {
+        // carregamentos independentes para permitir "card vazio" em caso de erro
+        await Task.WhenAll(LoadAreas(), LoadDisciplinas(), LoadAllDiscsForChips());
+    }
+
+    async Task LoadAreas()
+    {
+        loadingAreas = true; areasOk = false;
+        try
+        {
+            areas = await AreasApi.GetAllAsync() ?? new();
+            areasOk = true;
+        }
+        catch { areas = new(); areasOk = false; }
+        finally { loadingAreas = false; StateHasChanged(); }
+    }
+
+    async Task LoadDisciplinas()
+    {
+        loadingDisc = true; discOk = false;
+        try
+        {
+            discPage = await DisciplinasApi.GetPageAsync(areaId, q, current, pageSize);
+            discOk = true;
+        }
+        catch { discPage = null; discOk = false; }
+        finally { loadingDisc = false; StateHasChanged(); }
+    }
+
+    // pega um lote grande só para preencher os chips por área
+    async Task LoadAllDiscsForChips()
+    {
+        try
+        {
+            var first = await DisciplinasApi.GetPageAsync(null, null, 1, 200);
+            allDiscs = first?.Items ?? new();
+        }
+        catch { allDiscs = new(); }
+    }
+
+    // ===== ÁREA: criar/editar/excluir
+    void ShowAreaCreate()
+    {
+        areaEditId = null;
+        areaEdit = new AreaUpsert { Ativo = true };
+        showAreaForm = true;
+    }
+    async Task ShowAreaEdit(int id)
+    {
+        try
+        {
+            var dto = await AreasApi.GetAsync(id);
+            if (dto is null) return;
+            areaEditId = id;
+            areaEdit = new AreaUpsert { Nome = dto.Nome, CorHex = dto.CorHex, Ordem = dto.Ordem, Ativo = dto.Ativo };
+            showAreaForm = true;
+        }
+        catch { }
+    }
+    async Task SaveArea()
+    {
+        try
+        {
+            if (areaEditId is null) _ = await AreasApi.CreateAsync(areaEdit);
+            else _ = await AreasApi.UpdateAsync(areaEditId.Value, areaEdit);
+            showAreaForm = false;
+            await Task.WhenAll(LoadAreas(), LoadAllDiscsForChips());
+        }
+        catch { await JS.InvokeVoidAsync("alert", "Erro ao salvar área."); }
+    }
+    void HideAreaForm() => showAreaForm = false;
+    async Task RemoveArea(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"Excluir área #{id}?")) return;
+        try { await AreasApi.DeleteAsync(id); await Task.WhenAll(LoadAreas(), LoadAllDiscsForChips()); }
+        catch { await JS.InvokeVoidAsync("alert", "Erro ao excluir área."); }
+    }
+
+    // ===== DISCIPLINA: criar/editar/excluir
+    void ShowDiscCreate()
+    {
+        discEditId = null;
+        discEdit = new DisciplinaUpsert();
+        showDiscForm = true;
+    }
+    async Task ShowDiscEdit(int id)
+    {
+        try
+        {
+            var dto = await DisciplinasApi.GetAsync(id);
+            if (dto is null) return;
+            discEditId = id;
+            discEdit = new DisciplinaUpsert
+                {
+                    Nome = dto.Nome,
+                    Sigla = dto.Sigla,
+                    AreaId = dto.AreaId,
+                    CargaHorariaRotulo = dto.CargaHorariaRotulo
+                };
+            showDiscForm = true;
+        }
+        catch { }
+    }
+    async Task SaveDisc()
+    {
+        try
+        {
+            if (discEditId is null) _ = await DisciplinasApi.CreateAsync(discEdit);
+            else _ = await DisciplinasApi.UpdateAsync(discEditId.Value, discEdit);
+            showDiscForm = false;
+            await Task.WhenAll(LoadDisciplinas(), LoadAllDiscsForChips());
+        }
+        catch { await JS.InvokeVoidAsync("alert", "Erro ao salvar disciplina."); }
+    }
+    void HideDiscForm() => showDiscForm = false;
+    async Task RemoveDisc(int id)
+    {
+        if (!await JS.InvokeAsync<bool>("confirm", $"Excluir disciplina #{id}?")) return;
+        try { await DisciplinasApi.DeleteAsync(id); await Task.WhenAll(LoadDisciplinas(), LoadAllDiscsForChips()); }
+        catch { await JS.InvokeVoidAsync("alert", "Erro ao excluir disciplina."); }
+    }
+
+    // ===== filtros/paginação
+    Task OnQueryChanged() { current = 1; return LoadDisciplinas(); }
+    Task Prev() { current--; return LoadDisciplinas(); }
+    Task Next() { current++; return LoadDisciplinas(); }
+}

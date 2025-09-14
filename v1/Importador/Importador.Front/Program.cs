@@ -1,69 +1,59 @@
-// Program.cs (Blazor WebAssembly - Client)
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Importador.Front;
 using Importador.Front.Services;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Logging;
 
+// ===== Blazor boot =====
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
-// Root component
 builder.RootComponents.Add<App>("#app");
+builder.RootComponents.Add<HeadOutlet>("head::after");
 
-// Carrega a URL do backend de wwwroot/appsettings.json
-// Exemplo do arquivo:
-// {
-//   "Backend": {
-//     "BaseUrl": "http://localhost:5162"
-//   }
-// }
-var baseUrlRaw = builder.Configuration["Backend:BaseUrl"];
+// ===== Descobrir a URL da API =====
+// 1) tenta ler wwwroot/appsettings.json (chave "ApiBaseUrl")
+// 2) fallback para variável de ambiente "VITE_API_BASE" (ex.: via vite/parcel) ou "API_BASE_URL"
+// 3) fallback final para http://localhost:5162/
+string apiBase = "http://localhost:5155/";
 
-// Fallback (NÃO IDEAL): se não houver appsettings, usa a BaseAddress do próprio front
-// Obs.: prefira SEMPRE definir Backend:BaseUrl no appsettings.json
-if (string.IsNullOrWhiteSpace(baseUrlRaw))
+try
 {
-    baseUrlRaw = builder.HostEnvironment.BaseAddress;
+    // Usa um HttpClient TEMPORÁRIO apontando para o próprio front
+    using var tmp = new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) };
+
+    // Lê appsettings.json do wwwroot
+    var cfg = await tmp.GetFromJsonAsync<Dictionary<string, string>>("appsettings.json");
+
+    string? TryGet(params string[] keys)
+        => cfg is null ? null : keys.Select(k => cfg.TryGetValue(k, out var v) ? v : null)
+                                   .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
+
+    var fromFile = TryGet("ApiBaseUrl", "API_BASE_URL");
+    var fromEnv = Environment.GetEnvironmentVariable("API_BASE_URL");
+
+    apiBase = fromFile ?? fromEnv ?? apiBase;
+}
+catch
+{
+    // Mantém fallback padrão se não achar/appsettings não existir
 }
 
-// Normaliza e valida URI
-if (!Uri.TryCreate(NormalizeBaseUrl("http://localhost:5155"), UriKind.Absolute, out var backendBaseUri))
-{
-    // Falha de configuração visível no console e que não impede a app de subir
-    Console.Error.WriteLine($"[Program] Backend:BaseUrl inválido: '{baseUrlRaw}'. " +
-                            "Corrija em wwwroot/appsettings.json -> Backend.BaseUrl");
-    backendBaseUri = new Uri(builder.HostEnvironment.BaseAddress); // evita null
-}
+if (!apiBase.EndsWith("/")) apiBase += "/";
 
-// Logging (útil durante diagnóstico)
-builder.Logging.SetMinimumLevel(LogLevel.Information);
-Console.WriteLine($"[Program] Backend BaseUrl = {backendBaseUri}");
-
-// HttpClient “default” (para arquivos estáticos do próprio front)
-builder.Services.AddScoped(sp => new HttpClient
+// ===== HttpClient único da aplicação, apontando para a API =====
+builder.Services.AddScoped(sp =>
 {
-    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+    var http = new HttpClient { BaseAddress = new Uri(apiBase) };
+    http.DefaultRequestHeaders.Accept.Clear();
+    http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+    return http;
 });
 
-// HttpClient “backend” (para chamar a API)
-builder.Services.AddHttpClient("backend", c =>
-{
-    c.BaseAddress = backendBaseUri;
-    c.DefaultRequestHeaders.Accept.Clear();
-    c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-});
-
-// Registra seus services que usam o "backend"
+// ===== DI dos API Clients (que usam rotas relativas: "api/...") =====
+builder.Services.AddScoped<IAreasApi, AreasApi>();
+builder.Services.AddScoped<IDisciplinasApi, DisciplinasApi>();
+builder.Services.AddScoped<IObservacoesApi, ObservacoesApi>();
 builder.Services.AddScoped<IImportsApi, ImportsApi>();
 builder.Services.AddScoped<IAlunosApi, AlunosApi>();
-builder.Services.AddScoped<IObservacoesApi, ObservacoesApi>();
 
 await builder.Build().RunAsync();
-
-static string NormalizeBaseUrl(string url)
-{
-    // Remove espaços e garante barra final (http://host:porta/)
-    url = url.Trim();
-    if (!url.EndsWith("/")) url += "/";
-    return url;
-}
