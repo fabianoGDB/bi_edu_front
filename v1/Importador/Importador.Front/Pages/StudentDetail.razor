@@ -1,49 +1,79 @@
-@page "/students/{AlunoId:int}"
-@using Importador.Front.Models
-@using Importador.Front.Components
+@page "/students/{id:int}"
+@using Microsoft.AspNetCore.Components
+@attribute [SupplyParameterFromQuery(Name = "importId")]
+@inject NavigationManager Nav
 
-<h1 class="h1">Conselho do Aluno</h1>
-<p class="sub">Aluno @AlunoId</p>
+<h1 class="page-title">Detalhes do Aluno</h1>
 
-<!-- Só o Heatmap por enquanto -->
-<div class="section">
-    <NotasHeatmap Resumo="_resumo"/>
+<a class="muted" style="display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;cursor:pointer;"
+   @onclick="() => Nav.NavigateTo("/imports")">
+    <span class="material-symbols-outlined">arrow_back</span> Voltar para Lista
+</a>
+
+<div class="student-grid">
+    @* ================== CARD: INFO (foto, nome, situação, frequência) ================== *@
+    <div class="card">
+        <div class="list-header">
+            <div class="title">
+                <span class="material-symbols-outlined">badge</span>
+                Informações do Aluno
+            </div>
+        </div>
+
+        <ErrorBoundary>
+            <ChildContent>
+                <StudentInfoCard StudentId="@id" ImportId="@(importId)"/>
+            </ChildContent>
+            <ErrorContent>
+                @* erro/sem dados → card permanece, apenas um espaço vazio *@
+                <div style="height:180px"></div>
+            </ErrorContent>
+        </ErrorBoundary>
+    </div>
+
+    @* ================== CARD: HEATMAP DE NOTAS ================== *@
+    <div class="card student-span-2">
+        <div class="list-header">
+            <div class="title">
+                <span class="material-symbols-outlined">grid_on</span>
+                Detalhamento de Notas por Área
+            </div>
+        </div>
+
+        <ErrorBoundary>
+            <ChildContent>
+                <NotasHeatmap StudentId="@id" ImportId="@(importId)"/>
+            </ChildContent>
+            <ErrorContent>
+                <div style="height:260px"></div>
+            </ErrorContent>
+        </ErrorBoundary>
+    </div>
+
+    @* ================== CARD: OBSERVAÇÕES ================== *@
+    <div class="card student-span-2">
+        <div class="list-header">
+            <div class="title">
+                <span class="material-symbols-outlined">styler</span>
+                Observações Pedagógicas
+            </div>
+            <div class="card-actions">
+                @* botões do próprio componente podem cuidar da importação/exportação *@
+            </div>
+        </div>
+
+        <ErrorBoundary>
+            <ChildContent>
+                <ObservacoesList StudentId="@id" ImportId="@(importId)"/>
+            </ChildContent>
+            <ErrorContent>
+                <div style="height:180px"></div>
+            </ErrorContent>
+        </ErrorBoundary>
+    </div>
 </div>
 
 @code {
-    [Parameter] public int AlunoId { get; set; }
-
-    // Mock no formato da opção B: (Area, Bimestre, Media)
-    private List<BimestreResumoDto> _resumo = new();
-
-    protected override void OnParametersSet()
-    {
-        // Dados falsos para visualizar o heatmap
-        _resumo = new()
-        {
-            // Matemática
-            new() { Area = "Matemática", Bimestre = 1, Media = 6.5m },
-            new() { Area = "Matemática", Bimestre = 2, Media = 7.2m },
-            new() { Area = "Matemática", Bimestre = 3, Media = 7.8m },
-            new() { Area = "Matemática", Bimestre = 4, Media = 6.9m },
-
-            // Ciências da Natureza
-            new() { Area = "Ciências", Bimestre = 1, Media = 7.1m },
-            new() { Area = "Ciências", Bimestre = 2, Media = 6.8m },
-            new() { Area = "Ciências", Bimestre = 3, Media = 7.3m },
-            new() { Area = "Ciências", Bimestre = 4, Media = 8.1m },
-
-            // Linguagens
-            new() { Area = "Linguagens", Bimestre = 1, Media = 8.0m },
-            new() { Area = "Linguagens", Bimestre = 2, Media = 7.7m },
-            new() { Area = "Linguagens", Bimestre = 3, Media = 8.6m },
-            new() { Area = "Linguagens", Bimestre = 4, Media = 8.3m },
-
-            // Disciplinas Técnicas
-            new() { Area = "D. Técnicas", Bimestre = 1, Media = 7.4m },
-            new() { Area = "D. Técnicas", Bimestre = 2, Media = 7.1m },
-            new() { Area = "D. Técnicas", Bimestre = 3, Media = 7.9m },
-            new() { Area = "D. Técnicas", Bimestre = 4, Media = 8.0m },
-        };
-    }
+    [Parameter] public int id { get; set; }
+    [Parameter] public int? importId { get; set; }
 }
